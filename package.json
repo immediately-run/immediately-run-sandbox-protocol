@@ -1,6 +1,6 @@
 {
   "name": "@immediately-run/sandbox-protocol",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "The sandbox<->SDK wire protocol: ONE descriptor set, projected into the wire-name constants, the payload types, and the per-side snapshots both repos gate against (PLATFORM_LAYERING_SPEC S1). Consumed by sandbox and immediately-run-sdk so a wire change is a version bump, not a hand-copied file.",
   "license": "UNLICENSED",
   "repository": {
@@ -22,6 +22,10 @@
     "./sdk": {
       "types": "./dist/sdk.d.ts",
       "default": "./dist/sdk.js"
+    },
+    "./fixtures": {
+      "types": "./dist/fixtures.d.ts",
+      "default": "./dist/fixtures.js"
     },
     "./snapshots/sandbox": "./snapshots/sandbox.json",
     "./snapshots/sdk": "./snapshots/sdk.json",
