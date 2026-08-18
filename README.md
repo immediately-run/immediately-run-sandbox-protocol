@@ -56,11 +56,26 @@ are already published. Add; never rename in place.
 
 ## Divergences
 
-A few names still mean different things on the two sides — recorded, not hidden. Each
-carries `divergent: true` and a note explaining the disagreement; the tests here fail a
-marker without a note, and fail a divergence marked on only one side. **R3-274e**
-resolves them and clears the markers, so *zero* markers is the goal state rather than
-the normal one.
+**There are none. R3-274e (0.2.0) resolved the last three**, and a test asserts the
+count is zero — so a marker reappearing is a failure, not a normal state.
+
+The mechanism stays, because the next one will be found the same way. A name whose two
+sides disagree carries `divergent: true` plus a note explaining the disagreement; the
+tests here fail a marker without a note, and fail a divergence marked on only one side.
+Mark it, file the item, resolve it — do not fix it silently in one side's source, which
+is how the three below got there.
+
+What 0.2.0 decided, in one line each (the reasoning is in
+`PLATFORM_LAYERING_SPEC` §6):
+
+| name | was | resolution |
+|---|---|---|
+| `sdk-handshake` | two producers declaring two payloads under one name | the **union**, every field optional — each producer populates what it owns |
+| `editor-context` | the frame declared 2 of the host's 4 fields | the frame's declaration catches up; what it *caches* stays a subset |
+| `fs-change` | neither side declared a type; one read `paths`, the other `paths`+`epoch` | both declare `{paths, epoch}`; `epoch` is kept (apps read it) |
+
+All three are **declaration** changes. No side sends a different byte than it sent
+before — which is what made them resolvable without a compatibility window.
 
 ## Publishing
 
