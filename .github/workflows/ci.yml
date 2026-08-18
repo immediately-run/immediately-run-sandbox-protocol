@@ -1,0 +1,57 @@
+name: ci
+
+# Build, test, lint on every PR + push; publish to npm on push to main via npm
+# trusted publishing (OIDC), mirroring platform-constants / the SDK release job.
+#
+# NOTE (R3-274b1 rollout): npm trusted publishing must be configured for
+# @immediately-run/sandbox-protocol on npmjs.com before the first publish succeeds.
+# Until then everything else still runs; only the publish step is inert (it skips
+# when the version is already published, and otherwise needs the OIDC trust link).
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-test-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # npm trusted publishing (OIDC)
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false # never cache in release builds
+      # Trusted publishing requires npm >= 11.5.1
+      - run: npm install -g npm@latest
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      - run: npm run lint
+      # The published artifacts are GENERATED from src/descriptors.protocol.mjs.
+      # "DO NOT EDIT" in a header is a request; this is the mechanism: regenerate and
+      # compare bytes, and prove the snapshots transcribe BACK to the committed
+      # descriptors — generation and transcription must be inverses, or the
+      # descriptors are a second copy that merely agrees today.
+      - run: npm run check:drift
+      # Both sides of the sandbox<->SDK seam depend on this package and it depends on
+      # neither — that is what makes it a safe home for the wire contract. A runtime
+      # dep added here is inherited by every consumer, including the browser bundle.
+      - run: npm run check:dependency-free
+      - name: Publish to npm via trusted publishing (skip if version already published)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          # setup-node's registry-url writes an .npmrc bound to NODE_AUTH_TOKEN.
+          # Clearing it forces OIDC trusted publishing instead of (empty) token auth.
+          NODE_AUTH_TOKEN: ""
+        run: |
+          PKG_NAME=$(node -p "require('./package.json').name")
+          PKG_VER=$(node -p "require('./package.json').version")
+          if npm view "$PKG_NAME@$PKG_VER" version >/dev/null 2>&1; then
+            echo "::notice::$PKG_NAME@$PKG_VER already published — skipping."
+            exit 0
+          fi
+          npm publish --access public

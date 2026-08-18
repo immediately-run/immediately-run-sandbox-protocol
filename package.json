@@ -1,0 +1,54 @@
+{
+  "name": "@immediately-run/sandbox-protocol",
+  "version": "0.1.0",
+  "description": "The sandbox<->SDK wire protocol: ONE descriptor set, projected into the wire-name constants, the payload types, and the per-side snapshots both repos gate against (PLATFORM_LAYERING_SPEC S1). Consumed by sandbox and immediately-run-sdk so a wire change is a version bump, not a hand-copied file.",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/immediately-run/immediately-run-sandbox-protocol.git"
+  },
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./sandbox": {
+      "types": "./dist/sandbox.d.ts",
+      "default": "./dist/sandbox.js"
+    },
+    "./sdk": {
+      "types": "./dist/sdk.d.ts",
+      "default": "./dist/sdk.js"
+    },
+    "./snapshots/sandbox": "./snapshots/sandbox.json",
+    "./snapshots/sdk": "./snapshots/sdk.json",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "snapshots"
+  ],
+  "scripts": {
+    "generate": "node scripts/generate.mjs",
+    "build": "npm run generate && tsc -p tsconfig.build.json",
+    "test": "jest",
+    "lint": "eslint src test",
+    "check:drift": "node scripts/verify-drift.mjs --self-test && node scripts/verify-drift.mjs",
+    "check:dependency-free": "node scripts/check-dependency-free.mjs --self-test && node scripts/check-dependency-free.mjs",
+    "verify": "npm run build && npm test && npm run lint && npm run check:drift && npm run check:dependency-free",
+    "prepare": "npm run build"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.18.0",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^20.17.0",
+    "eslint": "^9.18.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.20.0"
+  }
+}
