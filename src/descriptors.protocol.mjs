@@ -849,8 +849,6 @@ export const CHANNELS = [
       "name": "editor-context",
       "const": "EDITOR_CONTEXT",
       "type": "EditorContext",
-      "divergent": true,
-      "divergentNote": "declared-incomplete — the host (site-main channelBridge.ts) sends {dirtyPaths, openFiles, activeFile, viewedFile}; this side declares only {dirtyPaths, activeFile?} while the SDK reads all four. `viewedFile` (R3-268) and `openFiles` never entered this declaration. R3-274e picks one shape for both sides.",
       "sandbox": {
         "kind": "push",
         "direction": "host->app",
@@ -859,16 +857,13 @@ export const CHANNELS = [
           "fields": [
             {
               "name": "activeFile",
-              "optional": true,
+              "optional": false,
               "union": [
                 {
                   "type": "null"
                 },
                 {
                   "type": "string"
-                },
-                {
-                  "type": "undefined"
                 }
               ]
             },
@@ -878,6 +873,25 @@ export const CHANNELS = [
               "array": {
                 "type": "string"
               }
+            },
+            {
+              "name": "openFiles",
+              "optional": false,
+              "array": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "viewedFile",
+              "optional": false,
+              "union": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string"
+                }
+              ]
             }
           ],
           "reads": [
@@ -888,9 +902,7 @@ export const CHANNELS = [
         "sites": [
           "src/editor/EditorContextService.ts",
           "src/editor/editorContextState.ts"
-        ],
-        "divergent": true,
-        "divergentNote": "declared-incomplete — the host (site-main channelBridge.ts) sends {dirtyPaths, openFiles, activeFile, viewedFile}; this side declares only {dirtyPaths, activeFile?} while the SDK reads all four. `viewedFile` (R3-268) and `openFiles` never entered this declaration. R3-274e picks one shape for both sides."
+        ]
       },
       "sdk": {
         "kind": "push",
@@ -949,9 +961,7 @@ export const CHANNELS = [
         },
         "sites": [
           "src/editorContext.ts"
-        ],
-        "divergent": true,
-        "divergentNote": "declared-incomplete — the host (site-main channelBridge.ts) sends {dirtyPaths, openFiles, activeFile, viewedFile}; this side declares only {dirtyPaths, activeFile?} while the SDK reads all four. `viewedFile` (R3-268) and `openFiles` never entered this declaration. R3-274e picks one shape for both sides."
+        ]
       }
     },
     {
@@ -1048,21 +1058,32 @@ export const CHANNELS = [
       "name": "fs-change",
       "const": "FS_CHANGE",
       "type": "FsChange",
-      "divergent": true,
-      "divergentNote": "subset-reads with no declared owner on either side — the host sends {paths, epoch}; this side reads only `paths`, the SDK reads both. Nothing forces the two to agree, which is the divergence PLATFORM_LAYERING_SPEC §2 names as the exemplar. The `kind` also differs (message here, push channel in the SDK). R3-274e decides: keep `epoch` or drop it.",
       "sandbox": {
         "kind": "message",
         "direction": "host->app",
         "payload": {
+          "fields": [
+            {
+              "name": "epoch",
+              "optional": false,
+              "type": "number"
+            },
+            {
+              "name": "paths",
+              "optional": false,
+              "array": {
+                "type": "string"
+              }
+            }
+          ],
           "reads": [
             "paths"
           ]
         },
         "sites": [
-          "src/index.ts"
-        ],
-        "divergent": true,
-        "divergentNote": "subset-reads with no declared owner on either side — the host sends {paths, epoch}; this side reads only `paths`, the SDK reads both. Nothing forces the two to agree, which is the divergence PLATFORM_LAYERING_SPEC §2 names as the exemplar. The `kind` also differs (message here, push channel in the SDK). R3-274e decides: keep `epoch` or drop it."
+          "src/index.ts",
+          "src/protocol/fsChange.ts"
+        ]
       },
       "sdk": {
         "kind": "push",
@@ -1092,9 +1113,7 @@ export const CHANNELS = [
         },
         "sites": [
           "src/onFsChange.ts"
-        ],
-        "divergent": true,
-        "divergentNote": "subset-reads with no declared owner on either side — the host sends {paths, epoch}; this side reads only `paths`, the SDK reads both. Nothing forces the two to agree, which is the divergence PLATFORM_LAYERING_SPEC §2 names as the exemplar. The `kind` also differs (message here, push channel in the SDK). R3-274e decides: keep `epoch` or drop it."
+        ]
       }
     },
     {
@@ -2730,8 +2749,6 @@ export const CHANNELS = [
       "name": "sdk-handshake",
       "const": "SDK_HANDSHAKE",
       "type": "SdkHandshake",
-      "divergent": true,
-      "divergentNote": "divergent-declared — TWO producers of one name with different payloads: this frame announces {protocolVersion, sandboxProtocolVersion}, the SDK announces {protocolVersion, sdkVersion}. R3-274d gave the frame its own SANDBOX_PROTOCOL_VERSION (announced additively; the host logs it, fail-open) and retired the sibling-checkout read that used to source `protocolVersion`. R3-274e picks one shape.",
       "sandbox": {
         "kind": "message",
         "direction": "app->host",
@@ -2739,21 +2756,45 @@ export const CHANNELS = [
           "fields": [
             {
               "name": "protocolVersion",
-              "optional": false,
-              "type": "string"
+              "optional": true,
+              "union": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
             },
             {
               "name": "sandboxProtocolVersion",
-              "optional": false,
-              "type": "string"
+              "optional": true,
+              "union": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
+            },
+            {
+              "name": "sdkVersion",
+              "optional": true,
+              "union": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
             }
           ]
         },
         "sites": [
           "src/index.ts"
-        ],
-        "divergent": true,
-        "divergentNote": "divergent-declared — TWO producers of one name with different payloads: this frame announces {protocolVersion, sandboxProtocolVersion}, the SDK announces {protocolVersion, sdkVersion}. R3-274d gave the frame its own SANDBOX_PROTOCOL_VERSION (announced additively; the host logs it, fail-open) and retired the sibling-checkout read that used to source `protocolVersion`. R3-274e picks one shape."
+        ]
       },
       "sdk": {
         "kind": "message",
@@ -2762,21 +2803,45 @@ export const CHANNELS = [
           "fields": [
             {
               "name": "protocolVersion",
-              "optional": false,
-              "type": "string"
+              "optional": true,
+              "union": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
+            },
+            {
+              "name": "sandboxProtocolVersion",
+              "optional": true,
+              "union": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
             },
             {
               "name": "sdkVersion",
-              "optional": false,
-              "type": "string"
+              "optional": true,
+              "union": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
             }
           ]
         },
         "sites": [
           "src/runtime.ts"
-        ],
-        "divergent": true,
-        "divergentNote": "divergent-declared — TWO producers of one name with different payloads: this frame announces {protocolVersion, sandboxProtocolVersion}, the SDK announces {protocolVersion, sdkVersion}. R3-274d gave the frame its own SANDBOX_PROTOCOL_VERSION (announced additively; the host logs it, fail-open) and retired the sibling-checkout read that used to source `protocolVersion`. R3-274e picks one shape."
+        ]
       }
     },
     {

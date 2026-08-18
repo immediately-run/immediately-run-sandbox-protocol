@@ -67,6 +67,21 @@ describe('the snapshots are the contract each repo gates against', () => {
 });
 
 describe('the divergences are visible, not buried', () => {
+  it('there are none left (R3-274e)', () => {
+    // The goal state, asserted rather than assumed — and the reason the two guards
+    // below are now vacuous loops. They stay because they guard the NEXT marker
+    // somebody adds, not because they are testing anything today; this case is what
+    // keeps that honest, by failing the moment a marker reappears without the
+    // roadmap item that justifies it.
+    const marked: string[] = [];
+    for (const side of ['sandbox', 'sdk'] as const) {
+      for (const [name, ch] of Object.entries(snapshot(side).channels)) {
+        if (ch.divergent) marked.push(`${side}:${name}`);
+      }
+    }
+    expect(marked).toEqual([]);
+  });
+
   it('every divergent entry explains itself', () => {
     // A marker without a note is a TODO nobody can act on: R3-274e has to know what
     // the disagreement IS to pick a shape.

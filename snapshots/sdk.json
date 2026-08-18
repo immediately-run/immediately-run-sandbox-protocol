@@ -416,9 +416,7 @@
       },
       "sites": [
         "src/editorContext.ts"
-      ],
-      "divergent": true,
-      "divergentNote": "declared-incomplete — the host (site-main channelBridge.ts) sends {dirtyPaths, openFiles, activeFile, viewedFile}; this side declares only {dirtyPaths, activeFile?} while the SDK reads all four. `viewedFile` (R3-268) and `openFiles` never entered this declaration. R3-274e picks one shape for both sides."
+      ]
     },
     "form-factor": {
       "kind": "push",
@@ -503,9 +501,7 @@
       },
       "sites": [
         "src/onFsChange.ts"
-      ],
-      "divergent": true,
-      "divergentNote": "subset-reads with no declared owner on either side — the host sends {paths, epoch}; this side reads only `paths`, the SDK reads both. Nothing forces the two to agree, which is the divergence PLATFORM_LAYERING_SPEC §2 names as the exemplar. The `kind` also differs (message here, push channel in the SDK). R3-274e decides: keep `epoch` or drop it."
+      ]
     },
     "invitations": {
       "kind": "push",
@@ -1715,21 +1711,45 @@
         "fields": [
           {
             "name": "protocolVersion",
-            "optional": false,
-            "type": "string"
+            "optional": true,
+            "union": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "undefined"
+              }
+            ]
+          },
+          {
+            "name": "sandboxProtocolVersion",
+            "optional": true,
+            "union": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "undefined"
+              }
+            ]
           },
           {
             "name": "sdkVersion",
-            "optional": false,
-            "type": "string"
+            "optional": true,
+            "union": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "undefined"
+              }
+            ]
           }
         ]
       },
       "sites": [
         "src/runtime.ts"
-      ],
-      "divergent": true,
-      "divergentNote": "divergent-declared — TWO producers of one name with different payloads: this frame announces {protocolVersion, sandboxProtocolVersion}, the SDK announces {protocolVersion, sdkVersion}. R3-274d gave the frame its own SANDBOX_PROTOCOL_VERSION (announced additively; the host logs it, fail-open) and retired the sibling-checkout read that used to source `protocolVersion`. R3-274e picks one shape."
+      ]
     },
     "secrets-metadata": {
       "kind": "push",
