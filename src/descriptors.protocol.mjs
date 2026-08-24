@@ -1117,6 +1117,67 @@ export const CHANNELS = [
       }
     },
     {
+      "name": "host-attention",
+      "const": "HOST_ATTENTION",
+      "type": "HostAttention",
+      "sdk": {
+        "kind": "push",
+        "direction": "host->app",
+        "poll": "request-host-attention",
+        "payload": {
+          "reads": [
+            "attention"
+          ]
+        },
+        "value": {
+          "fields": [
+            {
+              "name": "awaiting",
+              "optional": false,
+              "type": "boolean"
+            },
+            {
+              "name": "kind",
+              "optional": false,
+              "union": [
+                {
+                  "type": "\"confirmation\""
+                },
+                {
+                  "type": "\"consent\""
+                },
+                {
+                  "type": "\"passkey\""
+                },
+                {
+                  "type": "\"picker\""
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            {
+              "name": "since",
+              "optional": false,
+              "union": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            }
+          ],
+          "type": "HostAttention"
+        },
+        "sites": [
+          "src/hostAttention.ts"
+        ]
+      }
+    },
+    {
       "name": "initialized",
       "const": "INITIALIZED",
       "type": "Initialized",
@@ -2571,6 +2632,21 @@ export const CHANNELS = [
         },
         "sites": [
           "src/runtime.ts"
+        ]
+      }
+    },
+    {
+      "name": "request-host-attention",
+      "const": "REQUEST_HOST_ATTENTION",
+      "type": "RequestHostAttention",
+      "sdk": {
+        "kind": "poll",
+        "direction": "app->host",
+        "payload": {
+          "fields": []
+        },
+        "sites": [
+          "src/hostAttention.ts"
         ]
       }
     },
