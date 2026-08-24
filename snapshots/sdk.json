@@ -503,6 +503,62 @@
         "src/onFsChange.ts"
       ]
     },
+    "host-attention": {
+      "kind": "push",
+      "direction": "host->app",
+      "poll": "request-host-attention",
+      "payload": {
+        "reads": [
+          "attention"
+        ]
+      },
+      "value": {
+        "fields": [
+          {
+            "name": "awaiting",
+            "optional": false,
+            "type": "boolean"
+          },
+          {
+            "name": "kind",
+            "optional": false,
+            "union": [
+              {
+                "type": "\"confirmation\""
+              },
+              {
+                "type": "\"consent\""
+              },
+              {
+                "type": "\"passkey\""
+              },
+              {
+                "type": "\"picker\""
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          {
+            "name": "since",
+            "optional": false,
+            "union": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          }
+        ],
+        "type": "HostAttention"
+      },
+      "sites": [
+        "src/hostAttention.ts"
+      ]
+    },
     "invitations": {
       "kind": "push",
       "direction": "host->app",
@@ -1632,6 +1688,16 @@
       },
       "sites": [
         "src/runtime.ts"
+      ]
+    },
+    "request-host-attention": {
+      "kind": "poll",
+      "direction": "app->host",
+      "payload": {
+        "fields": []
+      },
+      "sites": [
+        "src/hostAttention.ts"
       ]
     },
     "request-invitations": {
