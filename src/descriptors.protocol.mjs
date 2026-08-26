@@ -216,6 +216,7 @@ export const DYNAMIC_FAMILIES = {
   sdk: {
     "protocol-<scheme>": {
       "schemes": [
+        "analytics",
         "contribute",
         "dnd",
         "editor",
@@ -1484,6 +1485,54 @@ export const CHANNELS = [
         },
         "sites": [
           "src/mounts.ts"
+        ]
+      }
+    },
+    {
+      "name": "protocol-analytics",
+      "const": "PROTOCOL_ANALYTICS",
+      "type": "ProtocolAnalytics",
+      "sdk": {
+        "kind": "request",
+        "direction": "app->host",
+        "methods": {
+          "emit": {
+            "payload": {
+              "fields": [
+                {
+                  "name": "name",
+                  "optional": false,
+                  "type": "string"
+                },
+                {
+                  "name": "props",
+                  "optional": true,
+                  "union": [
+                    {
+                      "type": "Record<string, AnalyticsPropValue>"
+                    },
+                    {
+                      "type": "undefined"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "route": {
+            "payload": {
+              "fields": [
+                {
+                  "name": "path",
+                  "optional": false,
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        "sites": [
+          "src/analytics.ts"
         ]
       }
     },
