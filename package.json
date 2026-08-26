@@ -55,7 +55,8 @@
     "lint": "eslint src test",
     "check:drift": "node scripts/verify-drift.mjs --self-test && node scripts/verify-drift.mjs",
     "check:dependency-free": "node scripts/check-dependency-free.mjs --self-test && node scripts/check-dependency-free.mjs",
-    "verify": "npm run build && npm test && npm run lint && npm run check:drift && npm run check:dependency-free",
+    "check:publish-version": "node scripts/check-publish-version.mjs --self-test && node scripts/check-publish-version.mjs",
+    "verify": "npm run check:publish-version && npm run build && npm test && npm run lint && npm run check:drift && npm run check:dependency-free",
     "prepare": "npm run build"
   },
   "devDependencies": {

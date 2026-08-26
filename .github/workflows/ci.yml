@@ -20,6 +20,12 @@ jobs:
       id-token: write # npm trusted publishing (OIDC)
     steps:
       - uses: actions/checkout@v6
+        with:
+          # R3-327 check 2 diffs this branch against its merge base, so it needs the
+          # history to find one. A depth-1 checkout has none, and the check refuses to
+          # report success without a diff (an undetermined answer is not a pass), so a
+          # shallow clone would fail it rather than skip it.
+          fetch-depth: 0
       - uses: actions/setup-node@v6
         with:
           node-version: '24'
@@ -27,6 +33,13 @@ jobs:
           package-manager-cache: false # never cache in release builds
       # Trusted publishing requires npm >= 11.5.1
       - run: npm install -g npm@latest
+      # R3-327 check 2 — shipped bytes changed and `version` did not. The publish step
+      # below already refuses this, correctly, but only on a push to `main`: a PR never
+      # runs it, so the cost lands on `main` and on whoever pushes next. Same question,
+      # moved to PR time. Replays sdk #111's real diff in its `--self-test`.
+      - name: Shipped bytes changed ⇒ the version was bumped in this PR (R3-327)
+        if: github.event_name == 'pull_request'
+        run: npm run check:publish-version
       - run: npm ci
       - run: npm run build
       - run: npm test
