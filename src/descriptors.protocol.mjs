@@ -220,6 +220,7 @@ export const DYNAMIC_FAMILIES = {
         "contribute",
         "dnd",
         "editor",
+        "feed",
         "ipc",
         "launch",
         "llm",
@@ -1886,7 +1887,7 @@ export const CHANNELS = [
                 },
                 {
                   "name": "params",
-                  "optional": true,
+                  "optional": false,
                   "type": "Record<string, string | number>"
                 }
               ]
