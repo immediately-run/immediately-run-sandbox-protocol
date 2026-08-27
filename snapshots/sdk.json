@@ -1108,6 +1108,31 @@
         "src/editor.ts"
       ]
     },
+    "protocol-feed": {
+      "kind": "request",
+      "direction": "app->host",
+      "methods": {
+        "fetch": {
+          "payload": {
+            "fields": [
+              {
+                "name": "instanceId",
+                "optional": false,
+                "type": "string"
+              },
+              {
+                "name": "params",
+                "optional": true,
+                "type": "Record<string, string | number>"
+              }
+            ]
+          }
+        }
+      },
+      "sites": [
+        "src/feed.ts"
+      ]
+    },
     "protocol-fetch": {
       "kind": "request+stream",
       "direction": "app->host",
