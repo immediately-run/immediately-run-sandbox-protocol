@@ -1869,6 +1869,36 @@ export const CHANNELS = [
       }
     },
     {
+      "name": "protocol-feed",
+      "const": "PROTOCOL_FEED",
+      "type": "ProtocolFeed",
+      "sdk": {
+        "kind": "request",
+        "direction": "app->host",
+        "methods": {
+          "fetch": {
+            "payload": {
+              "fields": [
+                {
+                  "name": "instanceId",
+                  "optional": false,
+                  "type": "string"
+                },
+                {
+                  "name": "params",
+                  "optional": true,
+                  "type": "Record<string, string | number>"
+                }
+              ]
+            }
+          }
+        },
+        "sites": [
+          "src/feed.ts"
+        ]
+      }
+    },
+    {
       "name": "protocol-fetch",
       "const": "PROTOCOL_FETCH",
       "type": "ProtocolFetch",
