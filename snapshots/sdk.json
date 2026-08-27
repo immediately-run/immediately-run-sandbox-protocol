@@ -1122,7 +1122,7 @@
               },
               {
                 "name": "params",
-                "optional": true,
+                "optional": false,
                 "type": "Record<string, string | number>"
               }
             ]
@@ -2194,6 +2194,7 @@
         "contribute",
         "dnd",
         "editor",
+        "feed",
         "ipc",
         "launch",
         "llm",
