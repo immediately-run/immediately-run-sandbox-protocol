@@ -493,6 +493,56 @@ export const CHANNELS = [
       }
     },
     {
+      "name": "chrome-state",
+      "const": "CHROME_STATE",
+      "type": "ChromeState",
+      "sdk": {
+        "kind": "push",
+        "direction": "host->app",
+        "poll": "request-chrome-state",
+        "payload": {
+          "reads": [
+            "chromeState"
+          ]
+        },
+        "value": {
+          "fields": [
+            {
+              "name": "overlay",
+              "optional": false,
+              "union": [
+                {
+                  "type": "\"menu\""
+                },
+                {
+                  "type": "\"none\""
+                }
+              ]
+            },
+            {
+              "name": "tab",
+              "optional": false,
+              "fields": [
+                {
+                  "name": "edge",
+                  "optional": false,
+                  "union": [
+                    {
+                      "type": "\"top-right\""
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "ChromeState"
+        },
+        "sites": [
+          "src/chromeState.ts"
+        ]
+      }
+    },
+    {
       "name": "compile",
       "const": "COMPILE",
       "type": "Compile",
@@ -2578,6 +2628,21 @@ export const CHANNELS = [
         },
         "sites": [
           "src/auth.ts"
+        ]
+      }
+    },
+    {
+      "name": "request-chrome-state",
+      "const": "REQUEST_CHROME_STATE",
+      "type": "RequestChromeState",
+      "sdk": {
+        "kind": "poll",
+        "direction": "app->host",
+        "payload": {
+          "fields": []
+        },
+        "sites": [
+          "src/chromeState.ts"
         ]
       }
     },

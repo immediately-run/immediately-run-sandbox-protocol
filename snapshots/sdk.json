@@ -87,6 +87,51 @@
         "src/auth.ts"
       ]
     },
+    "chrome-state": {
+      "kind": "push",
+      "direction": "host->app",
+      "poll": "request-chrome-state",
+      "payload": {
+        "reads": [
+          "chromeState"
+        ]
+      },
+      "value": {
+        "fields": [
+          {
+            "name": "overlay",
+            "optional": false,
+            "union": [
+              {
+                "type": "\"menu\""
+              },
+              {
+                "type": "\"none\""
+              }
+            ]
+          },
+          {
+            "name": "tab",
+            "optional": false,
+            "fields": [
+              {
+                "name": "edge",
+                "optional": false,
+                "union": [
+                  {
+                    "type": "\"top-right\""
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "type": "ChromeState"
+      },
+      "sites": [
+        "src/chromeState.ts"
+      ]
+    },
     "compile": {
       "kind": "message",
       "direction": "host->app",
@@ -1681,6 +1726,16 @@
       },
       "sites": [
         "src/auth.ts"
+      ]
+    },
+    "request-chrome-state": {
+      "kind": "poll",
+      "direction": "app->host",
+      "payload": {
+        "fields": []
+      },
+      "sites": [
+        "src/chromeState.ts"
       ]
     },
     "request-debug-enabled": {
