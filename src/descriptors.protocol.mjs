@@ -526,11 +526,7 @@ export const CHANNELS = [
                 {
                   "name": "edge",
                   "optional": false,
-                  "union": [
-                    {
-                      "type": "\"top-right\""
-                    }
-                  ]
+                  "type": "\"top-right\""
                 }
               ]
             }
