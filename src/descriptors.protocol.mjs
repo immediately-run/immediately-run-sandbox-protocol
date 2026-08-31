@@ -1117,6 +1117,29 @@ export const CHANNELS = [
               "type": "number"
             },
             {
+              "name": "mount",
+              "optional": true,
+              "union": [
+                {
+                  "fields": [
+                    {
+                      "name": "changes",
+                      "optional": false,
+                      "type": "MountChange[]"
+                    },
+                    {
+                      "name": "path",
+                      "optional": false,
+                      "type": "string"
+                    }
+                  ]
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
+            },
+            {
               "name": "paths",
               "optional": false,
               "array": {
@@ -1125,6 +1148,7 @@ export const CHANNELS = [
             }
           ],
           "reads": [
+            "mount",
             "paths"
           ]
         },
@@ -1139,6 +1163,7 @@ export const CHANNELS = [
         "payload": {
           "reads": [
             "epoch",
+            "mount",
             "paths"
           ]
         },
@@ -1148,6 +1173,29 @@ export const CHANNELS = [
               "name": "epoch",
               "optional": false,
               "type": "number"
+            },
+            {
+              "name": "mount",
+              "optional": true,
+              "union": [
+                {
+                  "fields": [
+                    {
+                      "name": "changes",
+                      "optional": false,
+                      "type": "MountChange[]"
+                    },
+                    {
+                      "name": "path",
+                      "optional": false,
+                      "type": "string"
+                    }
+                  ]
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
             },
             {
               "name": "paths",

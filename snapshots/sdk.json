@@ -520,6 +520,7 @@
       "payload": {
         "reads": [
           "epoch",
+          "mount",
           "paths"
         ]
       },
@@ -529,6 +530,29 @@
             "name": "epoch",
             "optional": false,
             "type": "number"
+          },
+          {
+            "name": "mount",
+            "optional": true,
+            "union": [
+              {
+                "fields": [
+                  {
+                    "name": "changes",
+                    "optional": false,
+                    "type": "MountChange[]"
+                  },
+                  {
+                    "name": "path",
+                    "optional": false,
+                    "type": "string"
+                  }
+                ]
+              },
+              {
+                "type": "undefined"
+              }
+            ]
           },
           {
             "name": "paths",

@@ -58,6 +58,17 @@ export const WIRE_FIXTURES: Readonly<Record<string, Readonly<Record<string, unkn
     'fs-change': Object.freeze({
       epoch: 7,
       paths: Object.freeze(['/app/src/App.tsx', '/app/content/home.mdx']),
+      // R3-409: the mount-anchored leg — a space mount's server-side batch. The
+      // two legs are disjoint in traffic (a batch carries one or the other), but
+      // ONE fixture carries BOTH so the cross-side proof exercises every key
+      // either side declares (the same reason `epoch` rides this fixture).
+      mount: Object.freeze({
+        path: '/mnt/3f2b9c',
+        changes: Object.freeze([
+          Object.freeze({ path: '/board.mdx', kind: 'change' }),
+          Object.freeze({ path: '/notes/new.md', kind: 'add' }),
+        ]),
+      }),
     }),
 
     // The frame's declaration caught up to the host's four fields. What each side
