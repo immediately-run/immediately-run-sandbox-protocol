@@ -2272,25 +2272,6 @@ export const CHANNELS = [
       }
     },
     {
-      "name": "protocol-secrets",
-      "const": "PROTOCOL_SECRETS",
-      "type": "ProtocolSecrets",
-      "sdk": {
-        "kind": "request",
-        "direction": "app->host",
-        "methods": {
-          "<dynamic>": {
-            "payload": {
-              "type": "object"
-            }
-          }
-        },
-        "sites": [
-          "src/secrets.ts"
-        ]
-      }
-    },
-    {
       "name": "protocol-recents",
       "const": "PROTOCOL_RECENTS",
       "type": "ProtocolRecents",
@@ -2306,6 +2287,25 @@ export const CHANNELS = [
         },
         "sites": [
           "src/recents.ts"
+        ]
+      }
+    },
+    {
+      "name": "protocol-secrets",
+      "const": "PROTOCOL_SECRETS",
+      "type": "ProtocolSecrets",
+      "sdk": {
+        "kind": "request",
+        "direction": "app->host",
+        "methods": {
+          "<dynamic>": {
+            "payload": {
+              "type": "object"
+            }
+          }
+        },
+        "sites": [
+          "src/secrets.ts"
         ]
       }
     },

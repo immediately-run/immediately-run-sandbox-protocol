@@ -1461,20 +1461,6 @@
         "src/llm.ts"
       ]
     },
-    "protocol-secrets": {
-      "kind": "request",
-      "direction": "app->host",
-      "methods": {
-        "<dynamic>": {
-          "payload": {
-            "type": "object"
-          }
-        }
-      },
-      "sites": [
-        "src/secrets.ts"
-      ]
-    },
     "protocol-recents": {
       "kind": "request",
       "direction": "app->host",
@@ -1487,6 +1473,20 @@
       },
       "sites": [
         "src/recents.ts"
+      ]
+    },
+    "protocol-secrets": {
+      "kind": "request",
+      "direction": "app->host",
+      "methods": {
+        "<dynamic>": {
+          "payload": {
+            "type": "object"
+          }
+        }
+      },
+      "sites": [
+        "src/secrets.ts"
       ]
     },
     "protocol-settings": {
