@@ -1475,6 +1475,20 @@
         "src/secrets.ts"
       ]
     },
+    "protocol-recents": {
+      "kind": "request",
+      "direction": "app->host",
+      "methods": {
+        "list": {
+          "payload": {
+            "type": "object"
+          }
+        }
+      },
+      "sites": [
+        "src/recents.ts"
+      ]
+    },
     "protocol-settings": {
       "kind": "request",
       "direction": "app->host",

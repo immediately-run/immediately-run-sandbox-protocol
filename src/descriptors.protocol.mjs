@@ -2291,6 +2291,25 @@ export const CHANNELS = [
       }
     },
     {
+      "name": "protocol-recents",
+      "const": "PROTOCOL_RECENTS",
+      "type": "ProtocolRecents",
+      "sdk": {
+        "kind": "request",
+        "direction": "app->host",
+        "methods": {
+          "list": {
+            "payload": {
+              "type": "object"
+            }
+          }
+        },
+        "sites": [
+          "src/recents.ts"
+        ]
+      }
+    },
+    {
       "name": "protocol-settings",
       "const": "PROTOCOL_SETTINGS",
       "type": "ProtocolSettings",
