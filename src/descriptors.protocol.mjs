@@ -1179,21 +1179,10 @@ export const CHANNELS = [
               "optional": true,
               "union": [
                 {
-                  "fields": [
-                    {
-                      "name": "changes",
-                      "optional": false,
-                      "type": "MountChange[]"
-                    },
-                    {
-                      "name": "path",
-                      "optional": false,
-                      "type": "string"
-                    }
-                  ]
+                  "type": "undefined"
                 },
                 {
-                  "type": "undefined"
+                  "type": "{ path: string; changes: MountChange[]; }"
                 }
               ]
             },
