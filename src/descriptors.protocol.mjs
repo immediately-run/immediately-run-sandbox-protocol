@@ -2281,7 +2281,23 @@ export const CHANNELS = [
         "methods": {
           "list": {
             "payload": {
-              "type": "object"
+              "fields": [
+                {
+                  "name": "clear",
+                  "optional": true,
+                  "union": [
+                    {
+                      "type": "false"
+                    },
+                    {
+                      "type": "true"
+                    },
+                    {
+                      "type": "undefined"
+                    }
+                  ]
+                }
+              ]
             }
           }
         },
