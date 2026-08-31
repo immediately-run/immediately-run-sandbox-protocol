@@ -224,6 +224,7 @@ export const DYNAMIC_FAMILIES = {
         "ipc",
         "launch",
         "llm",
+        "recents",
         "secrets",
         "settings",
         "spaces",
