@@ -1714,16 +1714,87 @@
           "payload": {
             "fields": [
               {
+                "name": "mode",
+                "optional": true,
+                "union": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "undefined"
+                  }
+                ]
+              },
+              {
                 "name": "theme",
+                "optional": false,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "add-source": {
+          "payload": {
+            "fields": [
+              {
+                "name": "location",
                 "optional": false,
                 "union": [
                   {
-                    "type": "\"dark\""
+                    "fields": [
+                      {
+                        "name": "kind",
+                        "optional": false,
+                        "type": "\"repo\""
+                      },
+                      {
+                        "name": "path",
+                        "optional": false,
+                        "type": "string"
+                      },
+                      {
+                        "name": "ref",
+                        "optional": true,
+                        "type": "string | undefined"
+                      },
+                      {
+                        "name": "repo",
+                        "optional": false,
+                        "type": "string"
+                      }
+                    ]
                   },
                   {
-                    "type": "\"light\""
+                    "fields": [
+                      {
+                        "name": "kind",
+                        "optional": false,
+                        "type": "\"space\""
+                      },
+                      {
+                        "name": "path",
+                        "optional": false,
+                        "type": "string"
+                      },
+                      {
+                        "name": "spaceId",
+                        "optional": false,
+                        "type": "string"
+                      }
+                    ]
                   }
                 ]
+              }
+            ]
+          }
+        },
+        "remove-source": {
+          "payload": {
+            "fields": [
+              {
+                "name": "themeKey",
+                "optional": false,
+                "type": "string"
               }
             ]
           }
@@ -1913,6 +1984,16 @@
       ]
     },
     "request-theme": {
+      "kind": "poll",
+      "direction": "app->host",
+      "payload": {
+        "fields": []
+      },
+      "sites": [
+        "src/theme.ts"
+      ]
+    },
+    "request-theme-catalog": {
       "kind": "poll",
       "direction": "app->host",
       "payload": {
@@ -2158,19 +2239,98 @@
       "poll": "request-theme",
       "payload": {
         "reads": [
-          "theme"
+          "modeId",
+          "theme",
+          "themeKey"
         ]
       },
       "value": {
-        "union": [
+        "fields": [
           {
-            "type": "\"dark\""
+            "name": "modeId",
+            "optional": false,
+            "type": "string"
           },
           {
-            "type": "\"light\""
+            "name": "theme",
+            "optional": false,
+            "union": [
+              {
+                "type": "\"dark\""
+              },
+              {
+                "type": "\"light\""
+              }
+            ]
+          },
+          {
+            "name": "themeKey",
+            "optional": false,
+            "type": "string"
           }
         ],
-        "type": "HostTheme"
+        "type": "HostThemeSelection"
+      },
+      "sites": [
+        "src/theme.ts"
+      ]
+    },
+    "theme-catalog": {
+      "kind": "push",
+      "direction": "host->app",
+      "poll": "request-theme-catalog",
+      "payload": {
+        "reads": [
+          "themes"
+        ]
+      },
+      "value": {
+        "fields": [
+          {
+            "name": "themes",
+            "optional": false,
+            "array": {
+              "fields": [
+                {
+                  "name": "label",
+                  "optional": false,
+                  "type": "string"
+                },
+                {
+                  "name": "modes",
+                  "optional": false,
+                  "array": {
+                    "fields": [
+                      {
+                        "name": "id",
+                        "optional": false,
+                        "type": "string"
+                      },
+                      {
+                        "name": "polarity",
+                        "optional": false,
+                        "union": [
+                          {
+                            "type": "\"dark\""
+                          },
+                          {
+                            "type": "\"light\""
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "themeKey",
+                  "optional": false,
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        ],
+        "type": "ThemeCatalog"
       },
       "sites": [
         "src/theme.ts"
