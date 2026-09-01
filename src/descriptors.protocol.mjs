@@ -3632,43 +3632,7 @@ export const CHANNELS = [
               "name": "themes",
               "optional": false,
               "array": {
-                "fields": [
-                  {
-                    "name": "label",
-                    "optional": false,
-                    "type": "string"
-                  },
-                  {
-                    "name": "modes",
-                    "optional": false,
-                    "array": {
-                      "fields": [
-                        {
-                          "name": "id",
-                          "optional": false,
-                          "type": "string"
-                        },
-                        {
-                          "name": "polarity",
-                          "optional": false,
-                          "union": [
-                            {
-                              "type": "\"dark\""
-                            },
-                            {
-                              "type": "\"light\""
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "name": "themeKey",
-                    "optional": false,
-                    "type": "string"
-                  }
-                ]
+                "type": "ThemeCatalogEntry"
               }
             }
           ],
