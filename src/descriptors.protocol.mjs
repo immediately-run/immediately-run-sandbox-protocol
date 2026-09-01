@@ -2550,29 +2550,6 @@ export const CHANNELS = [
         "kind": "request",
         "direction": "app->host",
         "methods": {
-          "set": {
-            "payload": {
-              "fields": [
-                {
-                  "name": "mode",
-                  "optional": true,
-                  "union": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": "undefined"
-                    }
-                  ]
-                },
-                {
-                  "name": "theme",
-                  "optional": false,
-                  "type": "string"
-                }
-              ]
-            }
-          },
           "add-source": {
             "payload": {
               "fields": [
@@ -2633,6 +2610,29 @@ export const CHANNELS = [
               "fields": [
                 {
                   "name": "themeKey",
+                  "optional": false,
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "set": {
+            "payload": {
+              "fields": [
+                {
+                  "name": "mode",
+                  "optional": true,
+                  "union": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "undefined"
+                    }
+                  ]
+                },
+                {
+                  "name": "theme",
                   "optional": false,
                   "type": "string"
                 }
