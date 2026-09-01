@@ -3015,6 +3015,21 @@ export const CHANNELS = [
       }
     },
     {
+      "name": "request-workspace",
+      "const": "REQUEST_WORKSPACE",
+      "type": "RequestWorkspace",
+      "sdk": {
+        "kind": "poll",
+        "direction": "app->host",
+        "payload": {
+          "fields": []
+        },
+        "sites": [
+          "src/workspace.ts"
+        ]
+      }
+    },
+    {
       "name": "resize",
       "const": "RESIZE",
       "type": "Resize",
@@ -3659,6 +3674,61 @@ export const CHANNELS = [
         },
         "sites": [
           "src/vcs.ts"
+        ]
+      }
+    },
+    {
+      "name": "workspace",
+      "const": "WORKSPACE",
+      "type": "Workspace",
+      "sdk": {
+        "kind": "push",
+        "direction": "host->app",
+        "poll": "request-workspace",
+        "payload": {
+          "reads": [
+            "workspace"
+          ]
+        },
+        "value": {
+          "union": [
+            {
+              "fields": [
+                {
+                  "name": "label",
+                  "optional": false,
+                  "type": "string"
+                },
+                {
+                  "name": "namespace",
+                  "optional": false,
+                  "type": "string"
+                },
+                {
+                  "name": "provider",
+                  "optional": false,
+                  "type": "string"
+                },
+                {
+                  "name": "ref",
+                  "optional": false,
+                  "type": "string"
+                },
+                {
+                  "name": "repository",
+                  "optional": false,
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "type": "Workspace | null"
+        },
+        "sites": [
+          "src/workspace.ts"
         ]
       }
     }
