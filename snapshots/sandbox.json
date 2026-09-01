@@ -668,6 +668,11 @@
       "payload": {
         "fields": [
           {
+            "name": "modeId",
+            "optional": false,
+            "type": "string"
+          },
+          {
             "name": "theme",
             "optional": false,
             "union": [
@@ -678,10 +683,17 @@
                 "type": "\"light\""
               }
             ]
+          },
+          {
+            "name": "themeKey",
+            "optional": false,
+            "type": "string"
           }
         ],
         "reads": [
-          "theme"
+          "modeId",
+          "theme",
+          "themeKey"
         ]
       },
       "sites": [
