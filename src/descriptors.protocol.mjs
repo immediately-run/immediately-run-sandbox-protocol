@@ -1465,6 +1465,16 @@ export const CHANNELS = [
             {
               "fields": [
                 {
+                  "name": "displayName",
+                  "optional": true,
+                  "type": "string | undefined"
+                },
+                {
+                  "name": "executor",
+                  "optional": true,
+                  "type": "ChatExecutor | undefined"
+                },
+                {
                   "name": "features",
                   "optional": false,
                   "type": "ChatFeatures"
@@ -1473,6 +1483,11 @@ export const CHANNELS = [
                   "name": "hostVouched",
                   "optional": false,
                   "type": "boolean"
+                },
+                {
+                  "name": "models",
+                  "optional": true,
+                  "type": "ChatTierModels | undefined"
                 },
                 {
                   "name": "providerId",
