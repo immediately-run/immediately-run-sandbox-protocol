@@ -37,8 +37,9 @@ repo's own gate asserts its module covers *exactly* its extracted wire surface, 
 union module would fail there, far from its cause.
 
 *(Those four numbers are asserted against the descriptors by `test/protocol.test.ts`, in
-this file and in `src/index.ts`. They had drifted — 57/39 against the real numbers, which this file states above — because
-prose counts in a comment are believed by the next reader and checked by nobody.)*
+this file and in `src/index.ts`. They had drifted — the SDK counts above were wrong —
+because prose counts in a comment are believed by the next reader and checked by
+nobody.)*
 
 ## Changing the wire
 

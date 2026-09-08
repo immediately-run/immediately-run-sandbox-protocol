@@ -69,10 +69,6 @@ describe('each side gets its own vocabulary, not the union', () => {
   });
 });
 
-// R3-562 review · R3. `poll` is a hand-typed cross-reference to ANOTHER channel's name,
-// and nothing resolved it: `scripts/generate.mjs` interpolates it straight into a doc
-// comment, and `check:drift` round-trips a typo faithfully — so a wrong name would ship
-// into `dist/sdk.d.ts` having passed the whole verify chain. Resolve it here.
 // R3-562 review round 3 (BLOCKING), found independently by the SDK's own
 // `check-protocol-snapshot.mjs` while wiring the consumer. The `region-visibility` sdk
 // entry declared `payload.fields` and no `value` — a shape that gate's extractor cannot
@@ -103,6 +99,10 @@ describe('an sdk-side push descriptor has the shape the SDK extractor produces',
   });
 });
 
+// R3-562 review · R3. `poll` is a hand-typed cross-reference to ANOTHER channel's name,
+// and nothing resolved it: `scripts/generate.mjs` interpolates it straight into a doc
+// comment, and `check:drift` round-trips a typo faithfully — so a wrong name would ship
+// into `dist/sdk.d.ts` having passed the whole verify chain. Resolve it here.
 describe("a channel's `poll` names a channel that exists", () => {
   it('resolves on the SAME side, for every push that declares one', () => {
     for (const side of ['sandbox', 'sdk'] as const) {
