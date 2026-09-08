@@ -743,6 +743,16 @@
           {
             "fields": [
               {
+                "name": "displayName",
+                "optional": true,
+                "type": "string | undefined"
+              },
+              {
+                "name": "executor",
+                "optional": true,
+                "type": "ChatExecutor | undefined"
+              },
+              {
                 "name": "features",
                 "optional": false,
                 "type": "ChatFeatures"
@@ -751,6 +761,11 @@
                 "name": "hostVouched",
                 "optional": false,
                 "type": "boolean"
+              },
+              {
+                "name": "models",
+                "optional": true,
+                "type": "ChatTierModels | undefined"
               },
               {
                 "name": "providerId",
