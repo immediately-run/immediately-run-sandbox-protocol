@@ -36,10 +36,52 @@ describe('each side gets its own vocabulary, not the union', () => {
     const d = new Set(Object.keys(snapshot('sdk').channels));
     const sdkOnly = [...d].filter((n) => !s.has(n));
     const sandboxOnly = [...s].filter((n) => !d.has(n));
-    // 39 SDK-only names are the ones the frame merely RELAYS (the host is the other
+    // The SDK-only names are the ones the frame merely RELAYS (the host is the other
     // end); the sandbox-only ones are frame↔host business the SDK never sees.
     expect(sdkOnly.length).toBeGreaterThan(30);
     expect(sandboxOnly.length).toBeGreaterThan(10);
+  });
+
+  // R3-562 review · R7. `README.md` and `src/index.ts` both PUBLISH these counts in
+  // prose — and `src/index.ts` ships them into `dist/index.d.ts`, so a consumer
+  // downloads them. They had drifted to "57 in the SDK … 39 SDK-only" against a real
+  // 70 / 52, because a number in a comment is believed by the next reader and checked
+  // by nobody. This is the check.
+  it('the counts the docs PUBLISH are the counts the descriptors produce', () => {
+    const s = new Set(Object.keys(snapshot('sandbox').channels));
+    const d = new Set(Object.keys(snapshot('sdk').channels));
+    const shared = [...d].filter((n) => s.has(n)).length;
+    const sdkOnly = [...d].filter((n) => !s.has(n)).length;
+    const sentence = `— ${s.size} wire names in the frame, ${d.size} in the SDK, ${shared} shared`;
+    for (const rel of ['../README.md', '../src/index.ts']) {
+      const text = readFileSync(join(__dirname, rel), 'utf8').replace(/\n(\/\/ |)/g, ' ').replace(/\s+/g, ' ');
+      expect(text).toContain(sentence);
+      expect(text).toMatch(new RegExp(`${sdkOnly} are SDK-only`));
+    }
+  });
+});
+
+// R3-562 review · R3. `poll` is a hand-typed cross-reference to ANOTHER channel's name,
+// and nothing resolved it: `scripts/generate.mjs` interpolates it straight into a doc
+// comment, and `check:drift` round-trips a typo faithfully — so a wrong name would ship
+// into `dist/sdk.d.ts` having passed the whole verify chain. Resolve it here.
+describe("a channel's `poll` names a channel that exists", () => {
+  it('resolves on the SAME side, for every push that declares one', () => {
+    for (const side of ['sandbox', 'sdk'] as const) {
+      const channels = snapshot(side).channels;
+      const names = new Set(Object.keys(channels));
+      for (const [name, entry] of Object.entries(channels)) {
+        const poll = (entry as { poll?: string }).poll;
+        if (poll === undefined) continue;
+        expect({ side, name, poll, resolves: names.has(poll) }).toEqual({ side, name, poll, resolves: true });
+      }
+    }
+  });
+
+  it('covers a real population — this would pass vacuously if nothing declared `poll`', () => {
+    // The gate a cross-reference check needs most: proof it is looking at something.
+    const withPoll = Object.values(snapshot('sdk').channels).filter((c) => (c as { poll?: string }).poll);
+    expect(withPoll.length).toBeGreaterThan(10);
   });
 });
 

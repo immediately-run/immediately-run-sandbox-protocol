@@ -31,10 +31,14 @@ dependency bump.
 | `@immediately-run/sandbox-protocol` | the format version + the snapshot types. **No constants** — importing the root must not be a way to reach the other side's vocabulary |
 
 **Two modules, not a union.** The sides speak overlapping but different subsets — 34
-wire names in the frame, 57 in the SDK, 18 shared. 39 are SDK-only because the frame
+wire names in the frame, 70 in the SDK, 18 shared. 52 are SDK-only because the frame
 merely *relays* them and the host is the other end (the R3-274a cross-repo audit). Each
 repo's own gate asserts its module covers *exactly* its extracted wire surface, so a
 union module would fail there, far from its cause.
+
+*(Those four numbers are asserted against the descriptors by `test/protocol.test.ts`, in
+this file and in `src/index.ts`. They had drifted — 57/39 against a real 70/52 — because
+prose counts in a comment are believed by the next reader and checked by nobody.)*
 
 ## Changing the wire
 
