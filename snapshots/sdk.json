@@ -822,6 +822,22 @@
         "src/mounts.ts"
       ]
     },
+    "platform-navigate": {
+      "kind": "message",
+      "direction": "app->host",
+      "payload": {
+        "fields": [
+          {
+            "name": "url",
+            "optional": false,
+            "type": "string"
+          }
+        ]
+      },
+      "sites": [
+        "src/platformLink.tsx"
+      ]
+    },
     "protocol-analytics": {
       "kind": "request",
       "direction": "app->host",

@@ -1589,6 +1589,27 @@ export const CHANNELS = [
       }
     },
     {
+      "name": "platform-navigate",
+      "const": "PLATFORM_NAVIGATE",
+      "type": "PlatformNavigate",
+      "sdk": {
+        "kind": "message",
+        "direction": "app->host",
+        "payload": {
+          "fields": [
+            {
+              "name": "url",
+              "optional": false,
+              "type": "string"
+            }
+          ]
+        },
+        "sites": [
+          "src/platformLink.tsx"
+        ]
+      }
+    },
+    {
       "name": "protocol-analytics",
       "const": "PROTOCOL_ANALYTICS",
       "type": "ProtocolAnalytics",

@@ -11,7 +11,7 @@
 //                                               repo's own gate compares against
 //
 // The two sides speak overlapping but DIFFERENT subsets — 34 wire names in the frame,
-// 70 in the SDK, 18 shared; 52 are SDK-only because the frame merely relays them and
+// 71 in the SDK, 18 shared; 53 are SDK-only because the frame merely relays them and
 // the host is the other end. (These four counts are ASSERTED against the descriptors by
 // `test/protocol.test.ts` — they are shipped in `dist/index.d.ts`, so a reader downloads
 // them, and they had drifted to 57/39 because nothing checked.) Hence a module per side:
