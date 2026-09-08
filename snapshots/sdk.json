@@ -1858,6 +1858,22 @@
         "src/ipc.ts"
       ]
     },
+    "region-visibility": {
+      "kind": "push",
+      "direction": "host->app",
+      "poll": "request-region-visibility",
+      "payload": {
+        "reads": [
+          "hidden"
+        ]
+      },
+      "value": {
+        "type": "boolean"
+      },
+      "sites": [
+        "src/region.ts"
+      ]
+    },
     "request-api-catalog": {
       "kind": "poll",
       "direction": "app->host",
@@ -1976,6 +1992,16 @@
       },
       "sites": [
         "src/mounts.ts"
+      ]
+    },
+    "request-region-visibility": {
+      "kind": "poll",
+      "direction": "app->host",
+      "payload": {
+        "fields": []
+      },
+      "sites": [
+        "src/region.ts"
       ]
     },
     "request-secrets-metadata": {

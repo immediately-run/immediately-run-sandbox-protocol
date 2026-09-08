@@ -2725,6 +2725,27 @@ export const CHANNELS = [
       }
     },
     {
+      "name": "region-visibility",
+      "const": "REGION_VISIBILITY",
+      "type": "RegionVisibility",
+      "sdk": {
+        "kind": "push",
+        "direction": "host->app",
+        "poll": "request-region-visibility",
+        "payload": {
+          "reads": [
+            "hidden"
+          ]
+        },
+        "value": {
+          "type": "boolean"
+        },
+        "sites": [
+          "src/region.ts"
+        ]
+      }
+    },
+    {
       "name": "register-frame",
       "const": "REGISTER_FRAME",
       "type": "RegisterFrame",
@@ -3002,6 +3023,21 @@ export const CHANNELS = [
         },
         "sites": [
           "src/mounts.ts"
+        ]
+      }
+    },
+    {
+      "name": "request-region-visibility",
+      "const": "REQUEST_REGION_VISIBILITY",
+      "type": "RequestRegionVisibility",
+      "sdk": {
+        "kind": "poll",
+        "direction": "app->host",
+        "payload": {
+          "fields": []
+        },
+        "sites": [
+          "src/region.ts"
         ]
       }
     },

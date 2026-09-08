@@ -36,10 +36,95 @@ describe('each side gets its own vocabulary, not the union', () => {
     const d = new Set(Object.keys(snapshot('sdk').channels));
     const sdkOnly = [...d].filter((n) => !s.has(n));
     const sandboxOnly = [...s].filter((n) => !d.has(n));
-    // 39 SDK-only names are the ones the frame merely RELAYS (the host is the other
+    // The SDK-only names are the ones the frame merely RELAYS (the host is the other
     // end); the sandbox-only ones are frame↔host business the SDK never sees.
     expect(sdkOnly.length).toBeGreaterThan(30);
     expect(sandboxOnly.length).toBeGreaterThan(10);
+  });
+
+  // R3-562 review · R7. `README.md` and `src/index.ts` both PUBLISH these counts in
+  // prose — and `src/index.ts` ships them into `dist/index.d.ts`, so a consumer
+  // downloads them. They had drifted to "57 in the SDK … 39 SDK-only" against a real
+  // 70 / 52, because a number in a comment is believed by the next reader and checked
+  // by nobody. This is the check.
+  it('the counts the docs PUBLISH are the counts the descriptors produce', () => {
+    const s = new Set(Object.keys(snapshot('sandbox').channels));
+    const d = new Set(Object.keys(snapshot('sdk').channels));
+    const shared = [...d].filter((n) => s.has(n)).length;
+    const sdkOnly = [...d].filter((n) => !s.has(n)).length;
+    // Both counts are matched as CONTIGUOUS SUBSTRINGS with their surrounding words, not
+    // as bare numbers: `${sdkOnly} are SDK-only` unanchored would accept "152 are
+    // SDK-only" against a real 52, which is the review's round-2 finding and is exactly
+    // the kind of near-miss a drifting number produces.
+    const sentence = `— ${s.size} wire names in the frame, ${d.size} in the SDK, ${shared} shared`;
+    const onlyClause = `${sdkOnly} are SDK-only because the frame merely`;
+    for (const rel of ['../README.md', '../src/index.ts']) {
+      const text = readFileSync(join(__dirname, rel), 'utf8').replace(/\n(\/\/ |)/g, ' ').replace(/\s+/g, ' ');
+      expect(text).toContain(sentence);
+      expect(text).toContain(onlyClause);
+      // …and the number is not merely PRESENT somewhere: nothing else may claim a
+      // different SDK-only count in the same file.
+      expect(text.match(/(\d+) are SDK-only/g) ?? []).toEqual([`${sdkOnly} are SDK-only`]);
+    }
+  });
+});
+
+// R3-562 review round 3 (BLOCKING), found independently by the SDK's own
+// `check-protocol-snapshot.mjs` while wiring the consumer. The `region-visibility` sdk
+// entry declared `payload.fields` and no `value` — a shape that gate's extractor cannot
+// produce, so the SDK could never have matched it, and the SDK gate has no `--update`:
+// the only route out is another publish, and a published version is immutable.
+//
+// The convention was already unanimous (17 of 18 sdk-side pushes) and unenforced. This
+// is the enforcement, and it belongs HERE rather than in the SDK because this is the
+// repo that can still change the answer.
+describe('an sdk-side push descriptor has the shape the SDK extractor produces', () => {
+  const sdkPushes = () =>
+    Object.entries(snapshot('sdk').channels).filter(([, c]) => (c as { kind?: string }).kind === 'push');
+
+  it('declares payload.reads, never payload.fields, and a value', () => {
+    for (const [name, entry] of sdkPushes()) {
+      const e = entry as { payload?: { reads?: string[]; fields?: unknown }; value?: unknown };
+      expect({
+        name,
+        reads: Array.isArray(e.payload?.reads) && e.payload.reads.length > 0,
+        fields: e.payload?.fields !== undefined,
+        value: e.value !== undefined,
+      }).toEqual({ name, reads: true, fields: false, value: true });
+    }
+  });
+
+  it('covers a real population — the check would pass vacuously with no sdk pushes', () => {
+    expect(sdkPushes().length).toBeGreaterThan(10);
+  });
+});
+
+// R3-562 review · R3. `poll` is a hand-typed cross-reference to ANOTHER channel's name,
+// and nothing resolved it: `scripts/generate.mjs` interpolates it straight into a doc
+// comment, and `check:drift` round-trips a typo faithfully — so a wrong name would ship
+// into `dist/sdk.d.ts` having passed the whole verify chain. Resolve it here.
+describe("a channel's `poll` names a channel that exists", () => {
+  it('resolves on the SAME side, for every push that declares one', () => {
+    for (const side of ['sandbox', 'sdk'] as const) {
+      const channels = snapshot(side).channels;
+      const names = new Set(Object.keys(channels));
+      for (const [name, entry] of Object.entries(channels)) {
+        const poll = (entry as { poll?: string }).poll;
+        if (poll === undefined) continue;
+        // Existence alone is too weak: `"poll": "region-message"` names a channel that
+        // exists on the same side and would ship `polled with \`region-message\`` into
+        // `src/sdk.ts` (review round 2). The real invariant is the naming convention every
+        // one of the 24 references already follows.
+        expect({ side, name, poll }).toEqual({ side, name, poll: `request-${name}` });
+        expect({ side, name, poll, resolves: names.has(poll) }).toEqual({ side, name, poll, resolves: true });
+      }
+    }
+  });
+
+  it('covers a real population — this would pass vacuously if nothing declared `poll`', () => {
+    // The gate a cross-reference check needs most: proof it is looking at something.
+    const withPoll = Object.values(snapshot('sdk').channels).filter((c) => (c as { poll?: string }).poll);
+    expect(withPoll.length).toBeGreaterThan(10);
   });
 });
 
