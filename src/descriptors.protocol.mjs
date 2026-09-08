@@ -2733,16 +2733,12 @@ export const CHANNELS = [
         "direction": "host->app",
         "poll": "request-region-visibility",
         "payload": {
-          "fields": [
-            {
-              "name": "hidden",
-              "optional": false,
-              "type": "boolean"
-            }
-          ],
           "reads": [
             "hidden"
           ]
+        },
+        "value": {
+          "type": "boolean"
         },
         "sites": [
           "src/region.ts"

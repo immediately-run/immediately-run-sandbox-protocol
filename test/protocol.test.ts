@@ -73,6 +73,36 @@ describe('each side gets its own vocabulary, not the union', () => {
 // and nothing resolved it: `scripts/generate.mjs` interpolates it straight into a doc
 // comment, and `check:drift` round-trips a typo faithfully — so a wrong name would ship
 // into `dist/sdk.d.ts` having passed the whole verify chain. Resolve it here.
+// R3-562 review round 3 (BLOCKING), found independently by the SDK's own
+// `check-protocol-snapshot.mjs` while wiring the consumer. The `region-visibility` sdk
+// entry declared `payload.fields` and no `value` — a shape that gate's extractor cannot
+// produce, so the SDK could never have matched it, and the SDK gate has no `--update`:
+// the only route out is another publish, and a published version is immutable.
+//
+// The convention was already unanimous (17 of 18 sdk-side pushes) and unenforced. This
+// is the enforcement, and it belongs HERE rather than in the SDK because this is the
+// repo that can still change the answer.
+describe('an sdk-side push descriptor has the shape the SDK extractor produces', () => {
+  const sdkPushes = () =>
+    Object.entries(snapshot('sdk').channels).filter(([, c]) => (c as { kind?: string }).kind === 'push');
+
+  it('declares payload.reads, never payload.fields, and a value', () => {
+    for (const [name, entry] of sdkPushes()) {
+      const e = entry as { payload?: { reads?: string[]; fields?: unknown }; value?: unknown };
+      expect({
+        name,
+        reads: Array.isArray(e.payload?.reads) && e.payload.reads.length > 0,
+        fields: e.payload?.fields !== undefined,
+        value: e.value !== undefined,
+      }).toEqual({ name, reads: true, fields: false, value: true });
+    }
+  });
+
+  it('covers a real population — the check would pass vacuously with no sdk pushes', () => {
+    expect(sdkPushes().length).toBeGreaterThan(10);
+  });
+});
+
 describe("a channel's `poll` names a channel that exists", () => {
   it('resolves on the SAME side, for every push that declares one', () => {
     for (const side of ['sandbox', 'sdk'] as const) {
