@@ -52,11 +52,19 @@ describe('each side gets its own vocabulary, not the union', () => {
     const d = new Set(Object.keys(snapshot('sdk').channels));
     const shared = [...d].filter((n) => s.has(n)).length;
     const sdkOnly = [...d].filter((n) => !s.has(n)).length;
+    // Both counts are matched as CONTIGUOUS SUBSTRINGS with their surrounding words, not
+    // as bare numbers: `${sdkOnly} are SDK-only` unanchored would accept "152 are
+    // SDK-only" against a real 52, which is the review's round-2 finding and is exactly
+    // the kind of near-miss a drifting number produces.
     const sentence = `— ${s.size} wire names in the frame, ${d.size} in the SDK, ${shared} shared`;
+    const onlyClause = `${sdkOnly} are SDK-only because the frame merely`;
     for (const rel of ['../README.md', '../src/index.ts']) {
       const text = readFileSync(join(__dirname, rel), 'utf8').replace(/\n(\/\/ |)/g, ' ').replace(/\s+/g, ' ');
       expect(text).toContain(sentence);
-      expect(text).toMatch(new RegExp(`${sdkOnly} are SDK-only`));
+      expect(text).toContain(onlyClause);
+      // …and the number is not merely PRESENT somewhere: nothing else may claim a
+      // different SDK-only count in the same file.
+      expect(text.match(/(\d+) are SDK-only/g) ?? []).toEqual([`${sdkOnly} are SDK-only`]);
     }
   });
 });
@@ -73,6 +81,11 @@ describe("a channel's `poll` names a channel that exists", () => {
       for (const [name, entry] of Object.entries(channels)) {
         const poll = (entry as { poll?: string }).poll;
         if (poll === undefined) continue;
+        // Existence alone is too weak: `"poll": "region-message"` names a channel that
+        // exists on the same side and would ship `polled with \`region-message\`` into
+        // `src/sdk.ts` (review round 2). The real invariant is the naming convention every
+        // one of the 24 references already follows.
+        expect({ side, name, poll }).toEqual({ side, name, poll: `request-${name}` });
         expect({ side, name, poll, resolves: names.has(poll) }).toEqual({ side, name, poll, resolves: true });
       }
     }
