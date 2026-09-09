@@ -1476,6 +1476,36 @@
         "src/llm.ts"
       ]
     },
+    "protocol-openrepo": {
+      "kind": "request",
+      "direction": "app->host",
+      "methods": {
+        "open": {
+          "payload": {
+            "fields": [
+              {
+                "name": "namespace",
+                "optional": false,
+                "type": "string"
+              },
+              {
+                "name": "provider",
+                "optional": false,
+                "type": "string"
+              },
+              {
+                "name": "repository",
+                "optional": false,
+                "type": "string"
+              }
+            ]
+          }
+        }
+      },
+      "sites": [
+        "src/openRepository.ts"
+      ]
+    },
     "protocol-recents": {
       "kind": "request",
       "direction": "app->host",
@@ -2466,6 +2496,7 @@
         "ipc",
         "launch",
         "llm",
+        "openrepo",
         "recents",
         "secrets",
         "settings",

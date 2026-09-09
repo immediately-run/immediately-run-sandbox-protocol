@@ -224,6 +224,7 @@ export const DYNAMIC_FAMILIES = {
         "ipc",
         "launch",
         "llm",
+        "openrepo",
         "recents",
         "secrets",
         "settings",
@@ -2284,6 +2285,41 @@ export const CHANNELS = [
         },
         "sites": [
           "src/llm.ts"
+        ]
+      }
+    },
+    {
+      "name": "protocol-openrepo",
+      "const": "PROTOCOL_OPENREPO",
+      "type": "ProtocolOpenrepo",
+      "sdk": {
+        "kind": "request",
+        "direction": "app->host",
+        "methods": {
+          "open": {
+            "payload": {
+              "fields": [
+                {
+                  "name": "namespace",
+                  "optional": false,
+                  "type": "string"
+                },
+                {
+                  "name": "provider",
+                  "optional": false,
+                  "type": "string"
+                },
+                {
+                  "name": "repository",
+                  "optional": false,
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        "sites": [
+          "src/openRepository.ts"
         ]
       }
     },
