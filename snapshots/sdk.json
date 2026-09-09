@@ -1476,6 +1476,20 @@
         "src/llm.ts"
       ]
     },
+    "protocol-localstore": {
+      "kind": "request",
+      "direction": "app->host",
+      "methods": {
+        "<dynamic>": {
+          "payload": {
+            "type": "Record<string, unknown>"
+          }
+        }
+      },
+      "sites": [
+        "src/mounts.ts"
+      ]
+    },
     "protocol-openrepo": {
       "kind": "request",
       "direction": "app->host",
@@ -2496,6 +2510,7 @@
         "ipc",
         "launch",
         "llm",
+        "localstore",
         "openrepo",
         "recents",
         "secrets",

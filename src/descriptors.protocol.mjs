@@ -224,6 +224,7 @@ export const DYNAMIC_FAMILIES = {
         "ipc",
         "launch",
         "llm",
+        "localstore",
         "openrepo",
         "recents",
         "secrets",
@@ -2285,6 +2286,25 @@ export const CHANNELS = [
         },
         "sites": [
           "src/llm.ts"
+        ]
+      }
+    },
+    {
+      "name": "protocol-localstore",
+      "const": "PROTOCOL_LOCALSTORE",
+      "type": "ProtocolLocalstore",
+      "sdk": {
+        "kind": "request",
+        "direction": "app->host",
+        "methods": {
+          "<dynamic>": {
+            "payload": {
+              "type": "Record<string, unknown>"
+            }
+          }
+        },
+        "sites": [
+          "src/mounts.ts"
         ]
       }
     },
