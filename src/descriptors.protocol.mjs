@@ -225,6 +225,7 @@ export const DYNAMIC_FAMILIES = {
         "launch",
         "llm",
         "localstore",
+        "openlink",
         "openrepo",
         "recents",
         "secrets",
@@ -2305,6 +2306,31 @@ export const CHANNELS = [
         },
         "sites": [
           "src/mounts.ts"
+        ]
+      }
+    },
+    {
+      "name": "protocol-openlink",
+      "const": "PROTOCOL_OPENLINK",
+      "type": "ProtocolOpenlink",
+      "sdk": {
+        "kind": "request",
+        "direction": "app->host",
+        "methods": {
+          "open": {
+            "payload": {
+              "fields": [
+                {
+                  "name": "url",
+                  "optional": false,
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        "sites": [
+          "src/openExternal.ts"
         ]
       }
     },
