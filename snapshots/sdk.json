@@ -1490,6 +1490,26 @@
         "src/mounts.ts"
       ]
     },
+    "protocol-openlink": {
+      "kind": "request",
+      "direction": "app->host",
+      "methods": {
+        "open": {
+          "payload": {
+            "fields": [
+              {
+                "name": "url",
+                "optional": false,
+                "type": "string"
+              }
+            ]
+          }
+        }
+      },
+      "sites": [
+        "src/openExternal.ts"
+      ]
+    },
     "protocol-openrepo": {
       "kind": "request",
       "direction": "app->host",
@@ -2511,6 +2531,7 @@
         "launch",
         "llm",
         "localstore",
+        "openlink",
         "openrepo",
         "recents",
         "secrets",
