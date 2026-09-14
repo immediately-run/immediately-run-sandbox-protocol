@@ -252,20 +252,28 @@ describe('the constants are the names, verbatim', () => {
 });
 
 // R3-620 review (BLOCKING) — the extractor that fingerprints a push channel's `value`
-// (immediately-run-sdk/check-protocol-snapshot.mjs) describes it at depth 1 with
-// MAX_DEPTH=2, so every field INSIDE the value is flattened to `{type}` at depth 3. An inline
-// `fields`/`array`/`union` shape here would be one the consumer can never produce — the same
-// immutable-publish stranding class as the field-order gate. The rule is universal today (every
-// push `value` field is a flat type reference), so gating it is safe and catches the next one.
-describe('a push channel value field is a flat type reference the extractor can produce', () => {
-  it('no value field inlines a shape the depth-2 extractor flattens', () => {
-    const pushes = Object.entries(snapshot('sdk').channels).filter(
-      ([, c]) => (c as { kind?: string }).kind === 'push',
-    ) as [string, { value?: { union?: { fields?: { name: string; type?: unknown; fields?: unknown; array?: unknown; union?: unknown }[] }[] } }][];
+// (immediately-run-sdk/scripts/check-protocol-snapshot.mjs) starts at depth 1 with
+// MAX_DEPTH=2. A UNION value consumes one depth level: its object members sit at depth 2 and
+// their FIELDS at depth 3, where the extractor can only emit a flat `{type}` — an inline
+// `fields`/`array`/`union` there is a shape the consumer can never produce, stranding the
+// SDK's `protocol:check` behind a corrective re-publish (the same class the field-order gate
+// records). A NON-union value's fields land at depth 2 and MAY be structured (e.g.
+// `fs-change.paths` is `{array:{type:"string"}}`), so the rule — and this walk — is scoped to
+// union-member fields only.
+describe('a union-valued push channel\'s fields are flat type references the extractor can produce', () => {
+  let sawUnionMemberFields = false;
 
-    for (const [name, entry] of pushes) {
+  it('no union-member value field inlines a shape the depth-2 extractor flattens', () => {
+    for (const [name, entryRaw] of Object.entries(snapshot('sdk').channels)) {
+      const entry = entryRaw as {
+        kind?: string;
+        value?: { union?: { fields?: { name: string; type?: unknown; fields?: unknown; array?: unknown; union?: unknown }[] }[] };
+      };
+      if (entry.kind !== 'push') continue;
+      let inspected = 0;
       for (const member of entry.value?.union ?? []) {
         for (const f of member.fields ?? []) {
+          inspected += 1;
           const nested = f.fields !== undefined || f.array !== undefined || f.union !== undefined;
           if (nested) {
             throw new Error(`${name}: value field ${f.name} is an inline shape, not a flat type reference`);
@@ -275,11 +283,11 @@ describe('a push channel value field is a flat type reference the extractor can 
           }
         }
       }
+      if (inspected > 0) sawUnionMemberFields = true;
     }
   });
 
-  it('covers a real population of push channels', () => {
-    const pushes = Object.values(snapshot('sdk').channels).filter((c) => (c as { kind?: string }).kind === 'push');
-    expect(pushes.length).toBeGreaterThan(10);
+  it('covers a real population of union-member fields', () => {
+    expect(sawUnionMemberFields).toBe(true);
   });
 });
