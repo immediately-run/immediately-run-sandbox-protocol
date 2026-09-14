@@ -1468,6 +1468,38 @@ export const CHANNELS = [
             {
               "fields": [
                 {
+                  "name": "connectedProviders",
+                  "optional": true,
+                  "union": [
+                    {
+                      "array": {
+                        "fields": [
+                          {
+                            "name": "displayName",
+                            "optional": false,
+                            "type": "string"
+                          },
+                          {
+                            "name": "models",
+                            "optional": false,
+                            "array": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "name": "providerId",
+                            "optional": false,
+                            "type": "string"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "undefined"
+                    }
+                  ]
+                },
+                {
                   "name": "displayName",
                   "optional": true,
                   "type": "string | undefined"
