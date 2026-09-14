@@ -99,6 +99,55 @@ describe('an sdk-side push descriptor has the shape the SDK extractor produces',
   });
 });
 
+// R3-620 review (BLOCKING) — the same "the SDK extractor cannot produce it" class, but via
+// ORDER rather than shape. Each consumer's `check-protocol-snapshot.mjs` sorts every
+// fingerprinted field list by `name.localeCompare` and compares order-sensitively against the
+// published snapshot with no `--update`, so a descriptor whose field list is not name-sorted
+// (here, `modelHint` before `model`, `providerId` before `model`) can never match — and an
+// immutable publish strands the consumer's `protocol:check` behind a corrective re-publish.
+// `verify:drift` round-trips field order faithfully (only wire NAMES are sorted), so this
+// repo's own gate would not catch it. The defect class exists on BOTH sides (sdk and sandbox
+// snapshots each feed an order-sensitive consumer gate), so the walk is over both, and it is
+// enforced here — the one repo that can still change the answer.
+describe('every field list is name-sorted as the extractor emits', () => {
+  const isFieldList = (a: unknown): a is { name: string }[] =>
+    Array.isArray(a) && a.length > 0 && a.every((e) => e && typeof e === 'object' && typeof (e as { name?: unknown }).name === 'string');
+
+  const assertFieldsSorted = (node: unknown, path: string): void => {
+    if (isFieldList(node)) {
+      const names = node.map((f) => f.name);
+      const sorted = [...names].sort((a, b) => a.localeCompare(b));
+      if (names.some((n, i) => i > 0 && n.localeCompare(names[i - 1]) < 0)) {
+        throw new Error(`${path}: field list not name-sorted — got [${names.join(', ')}], want [${sorted.join(', ')}]`);
+      }
+    }
+    if (Array.isArray(node)) {
+      for (const item of node) assertFieldsSorted(item, `${path}[]`);
+    } else if (node && typeof node === 'object') {
+      for (const [k, v] of Object.entries(node)) assertFieldsSorted(v, `${path}.${k}`);
+    }
+  };
+
+  it('walks every payload at every nesting level and requires name order', () => {
+    for (const side of ['sandbox', 'sdk'] as const) {
+      for (const [name, entry] of Object.entries(snapshot(side).channels)) {
+        assertFieldsSorted(entry, `${side}.channels.${name}`);
+      }
+    }
+  });
+
+  it('covers a real population of field lists', () => {
+    let lists = 0;
+    const count = (node: unknown): void => {
+      if (isFieldList(node)) lists += 1;
+      if (Array.isArray(node)) node.forEach(count);
+      else if (node && typeof node === 'object') Object.values(node).forEach(count);
+    };
+    for (const side of ['sandbox', 'sdk'] as const) Object.values(snapshot(side).channels).forEach(count);
+    expect(lists).toBeGreaterThan(20);
+  });
+});
+
 // R3-562 review · R3. `poll` is a hand-typed cross-reference to ANOTHER channel's name,
 // and nothing resolved it: `scripts/generate.mjs` interpolates it straight into a doc
 // comment, and `check:drift` round-trips a typo faithfully — so a wrong name would ship

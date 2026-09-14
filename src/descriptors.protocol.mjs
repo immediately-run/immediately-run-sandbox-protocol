@@ -2238,6 +2238,29 @@ export const CHANNELS = [
                   }
                 },
                 {
+                  "name": "model",
+                  "optional": true,
+                  "union": [
+                    {
+                      "fields": [
+                        {
+                          "name": "model",
+                          "optional": false,
+                          "type": "string"
+                        },
+                        {
+                          "name": "providerId",
+                          "optional": false,
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "undefined"
+                    }
+                  ]
+                },
+                {
                   "name": "modelHint",
                   "optional": true,
                   "union": [
