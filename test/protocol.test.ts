@@ -100,14 +100,16 @@ describe('an sdk-side push descriptor has the shape the SDK extractor produces',
 });
 
 // R3-620 review (BLOCKING) — the same "the SDK extractor cannot produce it" class, but via
-// ORDER rather than shape. The SDK's `check-protocol-snapshot.mjs` sorts every fingerprinted
-// field list by `name.localeCompare` and compares order-sensitively against the published
-// snapshot with no `--update`, so a descriptor whose field list is not name-sorted (here,
-// `modelHint` before `model`, `providerId` before `model`) can never match — and an immutable
-// publish strands the consumer's `protocol:check` behind a corrective re-publish. `verify:drift`
-// round-trips field order faithfully (only wire NAMES are sorted), so this repo's own gate
-// would not catch it; this is the enforcement, in the repo that can still change the answer.
-describe('every sdk-side field list is name-sorted as the extractor emits', () => {
+// ORDER rather than shape. Each consumer's `check-protocol-snapshot.mjs` sorts every
+// fingerprinted field list by `name.localeCompare` and compares order-sensitively against the
+// published snapshot with no `--update`, so a descriptor whose field list is not name-sorted
+// (here, `modelHint` before `model`, `providerId` before `model`) can never match — and an
+// immutable publish strands the consumer's `protocol:check` behind a corrective re-publish.
+// `verify:drift` round-trips field order faithfully (only wire NAMES are sorted), so this
+// repo's own gate would not catch it. The defect class exists on BOTH sides (sdk and sandbox
+// snapshots each feed an order-sensitive consumer gate), so the walk is over both, and it is
+// enforced here — the one repo that can still change the answer.
+describe('every field list is name-sorted as the extractor emits', () => {
   const isFieldList = (a: unknown): a is { name: string }[] =>
     Array.isArray(a) && a.length > 0 && a.every((e) => e && typeof e === 'object' && typeof (e as { name?: unknown }).name === 'string');
 
@@ -127,8 +129,10 @@ describe('every sdk-side field list is name-sorted as the extractor emits', () =
   };
 
   it('walks every payload at every nesting level and requires name order', () => {
-    for (const [name, entry] of Object.entries(snapshot('sdk').channels)) {
-      assertFieldsSorted(entry, `sdk.channels.${name}`);
+    for (const side of ['sandbox', 'sdk'] as const) {
+      for (const [name, entry] of Object.entries(snapshot(side).channels)) {
+        assertFieldsSorted(entry, `${side}.channels.${name}`);
+      }
     }
   });
 
@@ -139,7 +143,7 @@ describe('every sdk-side field list is name-sorted as the extractor emits', () =
       if (Array.isArray(node)) node.forEach(count);
       else if (node && typeof node === 'object') Object.values(node).forEach(count);
     };
-    Object.values(snapshot('sdk').channels).forEach(count);
+    for (const side of ['sandbox', 'sdk'] as const) Object.values(snapshot(side).channels).forEach(count);
     expect(lists).toBeGreaterThan(20);
   });
 });
