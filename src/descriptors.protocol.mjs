@@ -2238,6 +2238,29 @@ export const CHANNELS = [
                   }
                 },
                 {
+                  "name": "model",
+                  "optional": true,
+                  "union": [
+                    {
+                      "fields": [
+                        {
+                          "name": "model",
+                          "optional": false,
+                          "type": "string"
+                        },
+                        {
+                          "name": "providerId",
+                          "optional": false,
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "undefined"
+                    }
+                  ]
+                },
+                {
                   "name": "modelHint",
                   "optional": true,
                   "union": [
@@ -2246,29 +2269,6 @@ export const CHANNELS = [
                     },
                     {
                       "type": "\"smart\""
-                    },
-                    {
-                      "type": "undefined"
-                    }
-                  ]
-                },
-                {
-                  "name": "model",
-                  "optional": true,
-                  "union": [
-                    {
-                      "fields": [
-                        {
-                          "name": "providerId",
-                          "optional": false,
-                          "type": "string"
-                        },
-                        {
-                          "name": "model",
-                          "optional": false,
-                          "type": "string"
-                        }
-                      ]
                     },
                     {
                       "type": "undefined"
