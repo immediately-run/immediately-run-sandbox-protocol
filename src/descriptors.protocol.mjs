@@ -1468,6 +1468,11 @@ export const CHANNELS = [
             {
               "fields": [
                 {
+                  "name": "connectedProviders",
+                  "optional": true,
+                  "type": "ChatProviderChoice[] | undefined"
+                },
+                {
                   "name": "displayName",
                   "optional": true,
                   "type": "string | undefined"
