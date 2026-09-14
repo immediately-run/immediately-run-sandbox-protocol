@@ -250,3 +250,36 @@ describe('the constants are the names, verbatim', () => {
     expect(sdk.PROTOCOL_SPACES).toBe('protocol-spaces');
   });
 });
+
+// R3-620 review (BLOCKING) — the extractor that fingerprints a push channel's `value`
+// (immediately-run-sdk/check-protocol-snapshot.mjs) describes it at depth 1 with
+// MAX_DEPTH=2, so every field INSIDE the value is flattened to `{type}` at depth 3. An inline
+// `fields`/`array`/`union` shape here would be one the consumer can never produce — the same
+// immutable-publish stranding class as the field-order gate. The rule is universal today (every
+// push `value` field is a flat type reference), so gating it is safe and catches the next one.
+describe('a push channel value field is a flat type reference the extractor can produce', () => {
+  it('no value field inlines a shape the depth-2 extractor flattens', () => {
+    const pushes = Object.entries(snapshot('sdk').channels).filter(
+      ([, c]) => (c as { kind?: string }).kind === 'push',
+    ) as [string, { value?: { union?: { fields?: { name: string; type?: unknown; fields?: unknown; array?: unknown; union?: unknown }[] }[] } }][];
+
+    for (const [name, entry] of pushes) {
+      for (const member of entry.value?.union ?? []) {
+        for (const f of member.fields ?? []) {
+          const nested = f.fields !== undefined || f.array !== undefined || f.union !== undefined;
+          if (nested) {
+            throw new Error(`${name}: value field ${f.name} is an inline shape, not a flat type reference`);
+          }
+          if (typeof f.type !== 'string') {
+            throw new Error(`${name}: value field ${f.name} has no flat type`);
+          }
+        }
+      }
+    }
+  });
+
+  it('covers a real population of push channels', () => {
+    const pushes = Object.values(snapshot('sdk').channels).filter((c) => (c as { kind?: string }).kind === 'push');
+    expect(pushes.length).toBeGreaterThan(10);
+  });
+});
