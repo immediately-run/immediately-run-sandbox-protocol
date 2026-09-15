@@ -3468,6 +3468,11 @@ export const CHANNELS = [
           "array": {
             "fields": [
               {
+                "name": "bundle",
+                "optional": true,
+                "type": "SandboxMountBundle | undefined"
+              },
+              {
                 "name": "forwardedToApp",
                 "optional": false,
                 "type": "boolean"
