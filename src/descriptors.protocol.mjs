@@ -10,8 +10,11 @@
 //   generated/sdk/protocol-snapshot.json   the SDK's snapshot (a PROJECTION now)
 //
 // Per-channel `sandbox`/`sdk` blocks are that side's snapshot entry verbatim: a
-// name only one side speaks has only one block (39 of these are SDK-only — the
-// frame relays them and the host is the other end; see the R3-274a audit).
+// name only one side speaks has only one block (many channels are SDK-only — the
+// frame relays them and the host is the other end; see the R3-274a audit; the
+// exact count is deliberately not spelled here — README.md and src/index.ts
+// carry it and test/protocol.test.ts pins it, and a third hand-written copy in
+// this header was found stale by review: it said 39 when the set had 55).
 // `divergent` markers are hoisted to the channel so clearing one clears BOTH
 // projections, which is what R3-274e has to be able to do in a single edit.
 
