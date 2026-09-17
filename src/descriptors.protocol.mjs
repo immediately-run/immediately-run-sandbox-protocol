@@ -2483,6 +2483,28 @@ export const CHANNELS = [
               "type": "Record<string, unknown>"
             }
           },
+          "acceptInvite": {
+            "payload": {
+              "fields": [
+                {
+                  "name": "spaceId",
+                  "optional": false,
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "declineInvite": {
+            "payload": {
+              "fields": [
+                {
+                  "name": "spaceId",
+                  "optional": false,
+                  "type": "string"
+                }
+              ]
+            }
+          },
           "grants": {
             "payload": {
               "type": "{}"
@@ -2545,6 +2567,11 @@ export const CHANNELS = [
               "type": "{}"
             }
           },
+          "listInvites": {
+            "payload": {
+              "type": "{}"
+            }
+          },
           "lookupUser": {
             "payload": {
               "fields": [
@@ -2567,6 +2594,17 @@ export const CHANNELS = [
               ]
             }
           },
+          "pendingInvites": {
+            "payload": {
+              "fields": [
+                {
+                  "name": "spaceId",
+                  "optional": false,
+                  "type": "string"
+                }
+              ]
+            }
+          },
           "revokeGrant": {
             "payload": {
               "fields": [
@@ -2577,6 +2615,22 @@ export const CHANNELS = [
                 },
                 {
                   "name": "spaceId",
+                  "optional": false,
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "revokeInvite": {
+            "payload": {
+              "fields": [
+                {
+                  "name": "spaceId",
+                  "optional": false,
+                  "type": "string"
+                },
+                {
+                  "name": "uid",
                   "optional": false,
                   "type": "string"
                 }
