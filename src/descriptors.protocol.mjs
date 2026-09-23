@@ -1463,7 +1463,8 @@ export const CHANNELS = [
         "poll": "request-llm-provider",
         "payload": {
           "reads": [
-            "provider"
+            "provider",
+            "ungranted"
           ]
         },
         "value": {

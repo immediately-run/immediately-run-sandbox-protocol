@@ -735,7 +735,8 @@
       "poll": "request-llm-provider",
       "payload": {
         "reads": [
-          "provider"
+          "provider",
+          "ungranted"
         ]
       },
       "value": {
