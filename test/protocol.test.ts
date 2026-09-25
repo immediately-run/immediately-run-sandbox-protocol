@@ -291,3 +291,94 @@ describe('a union-valued push channel\'s fields are flat type references the ext
     expect(sawUnionMemberFields).toBe(true);
   });
 });
+
+// R3-708 review round 1 (BLOCKING ×2) — the same "a shape the SDK extractor cannot produce"
+// class as R3-562 and R3-620, reached through the REQUEST side, which none of the rules above
+// walked. `npm run verify` was green on a wire the consumer rejected, twice, and only an
+// overlay experiment in the SDK checkout found it. Each would have cost a corrective publish,
+// because the consumer's gate has no `--update` and a published version is immutable.
+//
+// Enforced here for the reason the two notes above give: this is the repo that can still
+// change the answer.
+describe('a request/stream method payload is a shape the SDK extractor produces', () => {
+  const sdkMethodPayloads = (): [string, string, Record<string, unknown>][] => {
+    const out: [string, string, Record<string, unknown>][] = [];
+    for (const [name, entryRaw] of Object.entries(snapshot('sdk').channels)) {
+      const entry = entryRaw as { kind?: string; methods?: Record<string, { payload?: Record<string, unknown> }> };
+      if (entry.kind !== 'request' && entry.kind !== 'stream') continue;
+      for (const [method, spec] of Object.entries(entry.methods ?? {})) {
+        if (spec.payload) out.push([name, method, spec.payload]);
+      }
+    }
+    return out;
+  };
+
+  // The extractor renders every literal through TypeScript's own `typeToString`, which
+  // double-quotes. A single-quoted literal in a descriptor is unmatchable — and invisible,
+  // because both spellings read identically to a human.
+  const assertLiteralQuoting = (node: unknown, path: string): void => {
+    if (node && typeof node === 'object') {
+      const t = (node as { type?: unknown }).type;
+      if (typeof t === 'string' && /(^|[|\s(])'/.test(t)) {
+        throw new Error(`${path}: literal type ${t} is single-quoted; the extractor emits double quotes`);
+      }
+      for (const [k, v] of Object.entries(node)) assertLiteralQuoting(v, `${path}.${k}`);
+    } else if (Array.isArray(node)) {
+      node.forEach((v, i) => assertLiteralQuoting(v, `${path}[${i}]`));
+    }
+  };
+
+  it('uses double-quoted literal types, as TypeScript renders them', () => {
+    for (const [name, method, payload] of sdkMethodPayloads()) {
+      assertLiteralQuoting(payload, `${name}.${method}.payload`);
+    }
+  });
+
+  // `describeType` sorts union members by `JSON.stringify` and the consumer compares
+  // order-sensitively. The field-order rule above cannot see this: its `isFieldList` requires
+  // a `name` on every element, and union members have none.
+  const assertUnionsSorted = (node: unknown, path: string): void => {
+    if (Array.isArray(node)) {
+      node.forEach((v, i) => assertUnionsSorted(v, `${path}[${i}]`));
+      return;
+    }
+    if (!node || typeof node !== 'object') return;
+    const union = (node as { union?: unknown }).union;
+    if (Array.isArray(union)) {
+      const keys = union.map((m) => JSON.stringify(m));
+      const sorted = [...keys].sort();
+      if (keys.some((k, i) => i > 0 && k < keys[i - 1])) {
+        throw new Error(`${path}: union members not sorted — got ${keys.join(' | ')}, want ${sorted.join(' | ')}`);
+      }
+    }
+    for (const [k, v] of Object.entries(node)) assertUnionsSorted(v, `${path}.${k}`);
+  };
+
+  it('sorts union members the way the extractor does', () => {
+    for (const [name, method, payload] of sdkMethodPayloads()) {
+      assertUnionsSorted(payload, `${name}.${method}.payload`);
+    }
+  });
+
+  it('covers a real population of request payloads', () => {
+    expect(sdkMethodPayloads().length).toBeGreaterThan(5);
+  });
+});
+
+// The second blocking finding, and the cheapest of all of these to assert: the family's
+// scheme list is DERIVABLE from the channels, so it can never be a second thing to remember.
+// Adding `protocol-spaces-mode` without adding `spaces-mode` here produced a divergence the
+// consumer reported as `~ (dynamic families)` and this repo reported as nothing at all.
+describe('the protocol-<scheme> family lists exactly the sdk request/stream schemes', () => {
+  it('is derived, not maintained', () => {
+    const channels = snapshot('sdk').channels as Record<string, { kind?: string }>;
+    const derived = Object.entries(channels)
+      .filter(([n, c]) => (c.kind === 'request' || c.kind === 'stream') && n.startsWith('protocol-'))
+      .map(([n]) => n.slice('protocol-'.length))
+      .sort();
+    const declared = ((snapshot('sdk').dynamicFamilies ?? {}) as Record<string, { schemes?: string[] }>)[
+      'protocol-<scheme>'
+    ]?.schemes;
+    expect(declared).toEqual(derived);
+  });
+});
