@@ -234,6 +234,7 @@ export const DYNAMIC_FAMILIES = {
         "secrets",
         "settings",
         "spaces",
+        "spaces-mode",
         "task",
         "theme",
         "vcs"
@@ -2705,59 +2706,95 @@ export const CHANNELS = [
         "methods": {
           "navigate": {
             "payload": {
-              "fields": [
+              "union": [
                 {
-                  "name": "activity",
-                  "optional": true,
-                  "union": [
+                  "fields": [
                     {
-                      "type": "'spaces'"
+                      "name": "activity",
+                      "optional": false,
+                      "union": [
+                        {
+                          "type": "\"inbox\""
+                        },
+                        {
+                          "type": "\"people\""
+                        },
+                        {
+                          "type": "\"settings\""
+                        },
+                        {
+                          "type": "\"spaces\""
+                        }
+                      ]
                     },
                     {
-                      "type": "'inbox'"
+                      "name": "member",
+                      "optional": true,
+                      "union": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "undefined"
+                        }
+                      ]
                     },
                     {
-                      "type": "'people'"
+                      "name": "path",
+                      "optional": true,
+                      "union": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "undefined"
+                        }
+                      ]
                     },
                     {
-                      "type": "'settings'"
+                      "name": "roomId",
+                      "optional": true,
+                      "union": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "undefined"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "section",
+                      "optional": true,
+                      "union": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "undefined"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "spaceId",
+                      "optional": false,
+                      "union": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
                     }
                   ]
                 },
                 {
-                  "name": "destination",
-                  "optional": true,
-                  "type": "'notifications'"
-                },
-                {
-                  "name": "member",
-                  "optional": true,
-                  "type": "string"
-                },
-                {
-                  "name": "path",
-                  "optional": true,
-                  "type": "string"
-                },
-                {
-                  "name": "roomId",
-                  "optional": true,
-                  "type": "string"
-                },
-                {
-                  "name": "section",
-                  "optional": true,
-                  "type": "string"
-                },
-                {
-                  "name": "spaceId",
-                  "optional": true,
-                  "union": [
+                  "fields": [
                     {
-                      "type": "string"
-                    },
-                    {
-                      "type": "null"
+                      "name": "destination",
+                      "optional": false,
+                      "type": "\"notifications\""
                     }
                   ]
                 }
