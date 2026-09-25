@@ -291,3 +291,96 @@ describe('a union-valued push channel\'s fields are flat type references the ext
     expect(sawUnionMemberFields).toBe(true);
   });
 });
+
+// R3-708 review round 1 (BLOCKING ×2) — the same "a shape the SDK extractor cannot produce"
+// class as R3-562 and R3-620, reached through the REQUEST side, which none of the rules above
+// walked. `npm run verify` was green on a wire the consumer rejected, twice, and only an
+// overlay experiment in the SDK checkout found it. Each would have cost a corrective publish,
+// because the consumer's gate has no `--update` and a published version is immutable.
+//
+// Enforced here for the reason the two notes above give: this is the repo that can still
+// change the answer.
+describe('every declared shape is one the extractor can produce', () => {
+  // Round 2 caught the first version of these walking `entry.methods` only, so a PUSH
+  // channel's `value` union — including the one this very change adds — was unguarded:
+  // swapping `spaces-mode.value.union`'s members passed every test here and produced
+  // `~ spaces-mode` in the consumer. So they walk WHOLE CHANNELS on BOTH sides, the way
+  // the R3-620 field-order rule directly above already does.
+  const everyChannel = (): [string, unknown][] =>
+    (['sandbox', 'sdk'] as const).flatMap((side) =>
+      Object.entries(snapshot(side).channels).map(([n, c]) => [`${side}:${n}`, c] as [string, unknown]),
+    );
+
+  // The extractor renders every literal through TypeScript's `typeToString`, which
+  // DOUBLE-quotes. A single-quoted literal is unmatchable — and invisible, because both
+  // spellings read identically to a human.
+  //
+  // Checked by stripping double-quoted spans and rejecting any quote left over, rather
+  // than by matching the positions a literal can start at: round 2 showed the positional
+  // form missed `Array<'a'>`, `Record<string,'a'>`, `['a','b']` and `{x:'a'}`. Stripping
+  // first keeps the one legitimate apostrophe case ("it's") passing.
+  const assertLiteralQuoting = (node: unknown, path: string): void => {
+    if (Array.isArray(node)) {
+      node.forEach((v, i) => assertLiteralQuoting(v, `${path}[${i}]`));
+      return;
+    }
+    if (!node || typeof node !== 'object') return;
+    const t = (node as { type?: unknown }).type;
+    if (typeof t === 'string' && t.replace(/"(?:[^"\\]|\\.)*"/g, '').includes("'")) {
+      throw new Error(`${path}: literal type ${t} is single-quoted; the extractor emits double quotes`);
+    }
+    for (const [k, v] of Object.entries(node)) assertLiteralQuoting(v, `${path}.${k}`);
+  };
+
+  // `describeType` sorts union members by `JSON.stringify` and the consumer compares
+  // order-sensitively. The field-order rule cannot see this: its `isFieldList` requires a
+  // `name` on every element, and union members have none.
+  const assertUnionsSorted = (node: unknown, path: string): void => {
+    if (Array.isArray(node)) {
+      node.forEach((v, i) => assertUnionsSorted(v, `${path}[${i}]`));
+      return;
+    }
+    if (!node || typeof node !== 'object') return;
+    const union = (node as { union?: unknown }).union;
+    if (Array.isArray(union)) {
+      const keys = union.map((m) => JSON.stringify(m));
+      if (keys.some((k, i) => i > 0 && k < keys[i - 1])) {
+        throw new Error(
+          `${path}: union members not sorted — got ${keys.join(' | ')}, want ${[...keys].sort().join(' | ')}`,
+        );
+      }
+    }
+    for (const [k, v] of Object.entries(node)) assertUnionsSorted(v, `${path}.${k}`);
+  };
+
+  it('uses double-quoted literal types, as TypeScript renders them', () => {
+    for (const [name, channel] of everyChannel()) assertLiteralQuoting(channel, name);
+  });
+
+  it('sorts union members the way the extractor does', () => {
+    for (const [name, channel] of everyChannel()) assertUnionsSorted(channel, name);
+  });
+
+  it('covers a real population — both sides, every channel', () => {
+    expect(everyChannel().length).toBeGreaterThan(100);
+  });
+});
+
+describe('the protocol-<scheme> family lists exactly the sdk request/stream schemes', () => {
+  it('is derived, not maintained', () => {
+    const channels = snapshot('sdk').channels as Record<string, { kind?: string }>;
+    // An exact mirror of check-protocol-snapshot.mjs: it filters on KIND alone and strips
+    // the prefix defensively. A `startsWith('protocol-')` clause here agrees today and
+    // would silently diverge on a future non-prefixed request channel — which the
+    // extractor would list under its full name. The request+stream pair is deliberate:
+    // `protocol-fetch` is excluded by both, which is why the list has no `fetch`.
+    const derived = Object.entries(channels)
+      .filter(([, c]) => c.kind === 'request' || c.kind === 'stream')
+      .map(([n]) => n.replace(/^protocol-/, ''))
+      .sort();
+    const declared = ((snapshot('sdk').dynamicFamilies ?? {}) as Record<string, { schemes?: string[] }>)[
+      'protocol-<scheme>'
+    ]?.schemes;
+    expect(declared).toEqual(derived);
+  });
+});

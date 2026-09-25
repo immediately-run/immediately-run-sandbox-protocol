@@ -1843,6 +1843,112 @@
         "src/mounts.ts"
       ]
     },
+    "protocol-spaces-mode": {
+      "kind": "request",
+      "direction": "app->host",
+      "methods": {
+        "navigate": {
+          "payload": {
+            "union": [
+              {
+                "fields": [
+                  {
+                    "name": "activity",
+                    "optional": false,
+                    "union": [
+                      {
+                        "type": "\"inbox\""
+                      },
+                      {
+                        "type": "\"people\""
+                      },
+                      {
+                        "type": "\"settings\""
+                      },
+                      {
+                        "type": "\"spaces\""
+                      }
+                    ]
+                  },
+                  {
+                    "name": "member",
+                    "optional": true,
+                    "union": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "undefined"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "path",
+                    "optional": true,
+                    "union": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "undefined"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "roomId",
+                    "optional": true,
+                    "union": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "undefined"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "section",
+                    "optional": true,
+                    "union": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "undefined"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "spaceId",
+                    "optional": false,
+                    "union": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "string"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "fields": [
+                  {
+                    "name": "destination",
+                    "optional": false,
+                    "type": "\"notifications\""
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "sites": [
+        "src/spacesMode.ts"
+      ]
+    },
     "protocol-task": {
       "kind": "request",
       "direction": "app->host",
@@ -2171,6 +2277,16 @@
         "src/mounts.ts"
       ]
     },
+    "request-spaces-mode": {
+      "kind": "poll",
+      "direction": "app->host",
+      "payload": {
+        "fields": []
+      },
+      "sites": [
+        "src/spacesMode.ts"
+      ]
+    },
     "request-theme": {
       "kind": "poll",
       "direction": "app->host",
@@ -2366,6 +2482,41 @@
       },
       "sites": [
         "src/mounts.ts"
+      ]
+    },
+    "spaces-mode": {
+      "kind": "push",
+      "direction": "host->app",
+      "poll": "request-spaces-mode",
+      "payload": {
+        "reads": [
+          "state"
+        ]
+      },
+      "value": {
+        "union": [
+          {
+            "fields": [
+              {
+                "name": "route",
+                "optional": false,
+                "type": "SpacesRoute"
+              },
+              {
+                "name": "space",
+                "optional": false,
+                "type": "SpacesModeSpace | null"
+              }
+            ]
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "type": "SpacesModeState | null"
+      },
+      "sites": [
+        "src/spacesMode.ts"
       ]
     },
     "task-cancel": {
@@ -2625,6 +2776,7 @@
         "secrets",
         "settings",
         "spaces",
+        "spaces-mode",
         "task",
         "theme",
         "vcs"
