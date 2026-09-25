@@ -2696,6 +2696,81 @@ export const CHANNELS = [
       }
     },
     {
+      "name": "protocol-spaces-mode",
+      "const": "PROTOCOL_SPACES_MODE",
+      "type": "ProtocolSpacesMode",
+      "sdk": {
+        "kind": "request",
+        "direction": "app->host",
+        "methods": {
+          "navigate": {
+            "payload": {
+              "fields": [
+                {
+                  "name": "activity",
+                  "optional": true,
+                  "union": [
+                    {
+                      "type": "'spaces'"
+                    },
+                    {
+                      "type": "'inbox'"
+                    },
+                    {
+                      "type": "'people'"
+                    },
+                    {
+                      "type": "'settings'"
+                    }
+                  ]
+                },
+                {
+                  "name": "destination",
+                  "optional": true,
+                  "type": "'notifications'"
+                },
+                {
+                  "name": "member",
+                  "optional": true,
+                  "type": "string"
+                },
+                {
+                  "name": "path",
+                  "optional": true,
+                  "type": "string"
+                },
+                {
+                  "name": "roomId",
+                  "optional": true,
+                  "type": "string"
+                },
+                {
+                  "name": "section",
+                  "optional": true,
+                  "type": "string"
+                },
+                {
+                  "name": "spaceId",
+                  "optional": true,
+                  "union": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "sites": [
+          "src/spacesMode.ts"
+        ]
+      }
+    },
+    {
       "name": "protocol-task",
       "const": "PROTOCOL_TASK",
       "type": "ProtocolTask",
@@ -3255,6 +3330,21 @@ export const CHANNELS = [
       }
     },
     {
+      "name": "request-spaces-mode",
+      "const": "REQUEST_SPACES_MODE",
+      "type": "RequestSpacesMode",
+      "sdk": {
+        "kind": "poll",
+        "direction": "app->host",
+        "payload": {
+          "fields": []
+        },
+        "sites": [
+          "src/spacesMode.ts"
+        ]
+      }
+    },
+    {
       "name": "request-theme",
       "const": "REQUEST_THEME",
       "type": "RequestTheme",
@@ -3571,6 +3661,46 @@ export const CHANNELS = [
         },
         "sites": [
           "src/mounts.ts"
+        ]
+      }
+    },
+    {
+      "name": "spaces-mode",
+      "const": "SPACES_MODE",
+      "type": "SpacesMode",
+      "sdk": {
+        "kind": "push",
+        "direction": "host->app",
+        "poll": "request-spaces-mode",
+        "payload": {
+          "reads": [
+            "state"
+          ]
+        },
+        "value": {
+          "union": [
+            {
+              "fields": [
+                {
+                  "name": "route",
+                  "optional": false,
+                  "type": "SpacesRoute"
+                },
+                {
+                  "name": "space",
+                  "optional": false,
+                  "type": "SpacesModeSpace | null"
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "type": "SpacesModeState | null"
+        },
+        "sites": [
+          "src/spacesMode.ts"
         ]
       }
     },
