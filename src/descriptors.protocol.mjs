@@ -2499,9 +2499,41 @@ export const CHANNELS = [
               ]
             }
           },
+          "convertToShared": {
+            "payload": {
+              "fields": [
+                {
+                  "name": "confirm",
+                  "optional": false,
+                  "type": "boolean"
+                },
+                {
+                  "name": "spaceId",
+                  "optional": false,
+                  "type": "string"
+                }
+              ]
+            }
+          },
           "declineInvite": {
             "payload": {
               "fields": [
+                {
+                  "name": "spaceId",
+                  "optional": false,
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "delete": {
+            "payload": {
+              "fields": [
+                {
+                  "name": "confirm",
+                  "optional": false,
+                  "type": "boolean"
+                },
                 {
                   "name": "spaceId",
                   "optional": false,
@@ -2537,6 +2569,22 @@ export const CHANNELS = [
                       "type": "\"writer\""
                     }
                   ]
+                },
+                {
+                  "name": "spaceId",
+                  "optional": false,
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "leave": {
+            "payload": {
+              "fields": [
+                {
+                  "name": "confirm",
+                  "optional": false,
+                  "type": "boolean"
                 },
                 {
                   "name": "spaceId",
@@ -2602,6 +2650,38 @@ export const CHANNELS = [
           "pendingInvites": {
             "payload": {
               "fields": [
+                {
+                  "name": "spaceId",
+                  "optional": false,
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "rename": {
+            "payload": {
+              "fields": [
+                {
+                  "name": "name",
+                  "optional": false,
+                  "type": "string"
+                },
+                {
+                  "name": "spaceId",
+                  "optional": false,
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "restore": {
+            "payload": {
+              "fields": [
+                {
+                  "name": "confirm",
+                  "optional": false,
+                  "type": "boolean"
+                },
                 {
                   "name": "spaceId",
                   "optional": false,
