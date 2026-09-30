@@ -2753,6 +2753,7 @@
       "poll": "request-vcs-state",
       "payload": {
         "reads": [
+          "agentSession",
           "branch",
           "changes",
           "diffLoading",
@@ -2791,6 +2792,21 @@
             "array": {
               "type": "VcsPR"
             }
+          },
+          {
+            "name": "agentSession",
+            "optional": true,
+            "union": [
+              {
+                "type": "VcsAgentSession"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "type": "undefined"
+              }
+            ]
           }
         ],
         "type": "VcsState"

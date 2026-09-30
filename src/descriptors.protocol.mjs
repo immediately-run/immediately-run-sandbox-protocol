@@ -4239,9 +4239,58 @@ export const CHANNELS = [
                   "type": "undefined"
                 }
               ]
+            },
+            {
+              "name": "agentSession",
+              "optional": true,
+              "union": [
+                {
+                  "fields": [
+                    {
+                      "name": "repo",
+                      "optional": false,
+                      "type": "string"
+                    },
+                    {
+                      "name": "conversationId",
+                      "optional": false,
+                      "type": "string"
+                    },
+                    {
+                      "name": "messageCount",
+                      "optional": false,
+                      "type": "number"
+                    },
+                    {
+                      "name": "updatedAt",
+                      "optional": true,
+                      "union": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "undefined"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "running",
+                      "optional": false,
+                      "type": "boolean"
+                    }
+                  ]
+                },
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
             }
           ],
           "reads": [
+            "agentSession",
             "branch",
             "changes",
             "diffLoading",
@@ -4259,6 +4308,7 @@ export const CHANNELS = [
         "poll": "request-vcs-state",
         "payload": {
           "reads": [
+            "agentSession",
             "branch",
             "changes",
             "diffLoading",
@@ -4297,6 +4347,21 @@ export const CHANNELS = [
               "array": {
                 "type": "VcsPR"
               }
+            },
+            {
+              "name": "agentSession",
+              "optional": true,
+              "union": [
+                {
+                  "type": "VcsAgentSession"
+                },
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
             }
           ],
           "type": "VcsState"
