@@ -2763,6 +2763,21 @@
       "value": {
         "fields": [
           {
+            "name": "agentSession",
+            "optional": true,
+            "union": [
+              {
+                "type": "VcsAgentSession"
+              },
+              {
+                "type": "null"
+              },
+              {
+                "type": "undefined"
+              }
+            ]
+          },
+          {
             "name": "branch",
             "optional": false,
             "union": [
@@ -2792,21 +2807,6 @@
             "array": {
               "type": "VcsPR"
             }
-          },
-          {
-            "name": "agentSession",
-            "optional": true,
-            "union": [
-              {
-                "type": "VcsAgentSession"
-              },
-              {
-                "type": "null"
-              },
-              {
-                "type": "undefined"
-              }
-            ]
           }
         ],
         "type": "VcsState"
