@@ -92,9 +92,9 @@ const main = () => {
     console.log(`     committed: ${drift.shipped}`);
     console.log(`     generated: ${drift.fresh}`);
     console.error(
-      '\nThese files are GENERATED from scripts/protocol-codegen/descriptors.protocol.mjs.\n' +
+      '\nThese files are GENERATED from src/descriptors.protocol.mjs.\n' +
         'Either one was hand-edited (edit the descriptors instead) or a descriptor change\n' +
-        'was not regenerated. Fix with: npm run protocol:generate',
+        'was not regenerated. Fix with: npm run generate',
     );
     process.exit(1);
   }
