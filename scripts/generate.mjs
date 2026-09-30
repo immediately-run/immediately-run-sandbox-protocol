@@ -23,16 +23,13 @@
  * proves the descriptors transcribe reality rather than replace it.
  *
  * ── The SDK-side delivery (read this before changing it) ──────────────────────
- * `generated/sdk/*` is emitted HERE and committed in THIS repo, then copied into
- * the SDK repo's `src/generated/protocol.ts` + `protocol-snapshot.json`. The copy
- * is a *manual sync* today, because there is no channel from this repo to the SDK:
- * the SDK does not depend on the sandbox (build order is SDK → fork → sandbox →
- * site-main), and reading a sibling checkout at build time is the very thing
- * R3-274d retires. The staleness is at least DETECTABLE: both emitted modules carry
- * a `descriptorsHash` stamp, so a stale SDK copy is visible by inspection rather
- * than silent. Making the sync automatic (publishing this as a versioned artifact
- * the SDK consumes, the ways_of_working §6 rule) is its own item — R3-274b1 — and
- * it gates R3-274c, the call-site migration that actually depends on the module.
+ * `src/sdk.ts` is emitted HERE and PUBLISHED inside this package; the SDK repo's
+ * `src/generated/protocol.ts` re-exports it (`export * from
+ * '@immediately-run/sandbox-protocol/sdk'`), so the sync is the pin bump — the
+ * versioned-artifact delivery R3-274b1 built (ways_of_working §6), not a manual
+ * copy. Both emitted modules carry a `descriptorsHash` stamp, and the consumers'
+ * pin-gated legs — `protocol:check` (reads the published snapshot) and
+ * `check:dependency-pins` (manifest ⇄ lockfile) — fail until the pin catches up.
  *
  * Run: node scripts/generate.mjs [--out <dir>]   (npm run generate)
  * Dependency-free.
