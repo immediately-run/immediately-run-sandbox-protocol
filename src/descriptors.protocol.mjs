@@ -1691,6 +1691,18 @@ export const CHANNELS = [
                       "type": "undefined"
                     }
                   ]
+                },
+                {
+                  "name": "transcriptRequested",
+                  "optional": true,
+                  "union": [
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "undefined"
+                    }
+                  ]
                 }
               ]
             }
