@@ -4181,14 +4181,7 @@ export const CHANNELS = [
                     {
                       "name": "updatedAt",
                       "optional": true,
-                      "union": [
-                        {
-                          "type": "number"
-                        },
-                        {
-                          "type": "undefined"
-                        }
-                      ]
+                      "type": "number | undefined"
                     }
                   ]
                 },
