@@ -28,7 +28,8 @@
  * '@immediately-run/sandbox-protocol/sdk'`), so the sync is the pin bump — the
  * versioned-artifact delivery R3-274b1 built (ways_of_working §6), not a manual
  * copy. Both emitted modules carry a `descriptorsHash` stamp, and the consumers'
- * protocol:check / descriptor-lockstep legs fail until the pin catches up.
+ * pin-gated legs — `protocol:check` (reads the published snapshot) and
+ * `check:dependency-pins` (manifest ⇄ lockfile) — fail until the pin catches up.
  *
  * Run: node scripts/generate.mjs [--out <dir>]   (npm run generate)
  * Dependency-free.
