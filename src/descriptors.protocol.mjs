@@ -4153,54 +4153,6 @@ export const CHANNELS = [
         "payload": {
           "fields": [
             {
-              "name": "agentSession",
-              "optional": true,
-              "union": [
-                {
-                  "fields": [
-                    {
-                      "name": "conversationId",
-                      "optional": false,
-                      "type": "string"
-                    },
-                    {
-                      "name": "messageCount",
-                      "optional": false,
-                      "type": "number"
-                    },
-                    {
-                      "name": "repo",
-                      "optional": false,
-                      "type": "string"
-                    },
-                    {
-                      "name": "running",
-                      "optional": false,
-                      "type": "boolean"
-                    },
-                    {
-                      "name": "updatedAt",
-                      "optional": true,
-                      "union": [
-                        {
-                          "type": "number"
-                        },
-                        {
-                          "type": "undefined"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "type": "null"
-                },
-                {
-                  "type": "undefined"
-                }
-              ]
-            },
-            {
               "name": "branch",
               "optional": true,
               "union": [
@@ -4290,7 +4242,6 @@ export const CHANNELS = [
             }
           ],
           "reads": [
-            "agentSession",
             "branch",
             "changes",
             "diffLoading",
