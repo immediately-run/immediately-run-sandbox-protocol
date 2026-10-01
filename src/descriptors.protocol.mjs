@@ -2640,6 +2640,29 @@ export const CHANNELS = [
               "type": "{}"
             }
           },
+          "listSpaceKeys": {
+            "payload": {
+              "fields": [
+                {
+                  "name": "spaceId",
+                  "optional": false,
+                  "type": "string"
+                },
+                {
+                  "name": "uid",
+                  "optional": true,
+                  "union": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "undefined"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
           "lookupUser": {
             "payload": {
               "fields": [
@@ -2663,6 +2686,17 @@ export const CHANNELS = [
             }
           },
           "pendingInvites": {
+            "payload": {
+              "fields": [
+                {
+                  "name": "spaceId",
+                  "optional": false,
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "publishSpaceKey": {
             "payload": {
               "fields": [
                 {
