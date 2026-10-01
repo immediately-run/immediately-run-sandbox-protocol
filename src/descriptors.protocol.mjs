@@ -2651,7 +2651,14 @@ export const CHANNELS = [
                 {
                   "name": "uid",
                   "optional": true,
-                  "type": "string"
+                  "union": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "undefined"
+                    }
+                  ]
                 }
               ]
             }
