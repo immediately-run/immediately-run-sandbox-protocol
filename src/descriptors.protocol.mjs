@@ -4171,7 +4171,62 @@ export const CHANNELS = [
         "kind": "message",
         "direction": "both",
         "payload": {
-          "type": "any"
+          "fields": [
+            {
+              "name": "back",
+              "optional": false,
+              "type": "boolean"
+            },
+            {
+              "name": "entryState",
+              "optional": true,
+              "union": [
+                {
+                  "type": "Record<string, unknown>"
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
+            },
+            {
+              "name": "forward",
+              "optional": false,
+              "type": "boolean"
+            },
+            {
+              "name": "replace",
+              "optional": true,
+              "union": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
+            },
+            {
+              "name": "url",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "name": "viewedDocument",
+              "optional": true,
+              "union": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
+            }
+          ]
         },
         "sites": [
           "src/boot.tsx",
