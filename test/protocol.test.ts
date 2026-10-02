@@ -384,3 +384,28 @@ describe('the protocol-<scheme> family lists exactly the sdk request/stream sche
     expect(declared).toEqual(derived);
   });
 });
+
+// R3-874 — the urlchange payload is typed now (it was `any`), and `replace` is the
+// optional field APP_CUSTOMIZATION_SPEC §5 adds. Pin the whole declared shape so a
+// later edit cannot quietly drop a field the SDK's navigate() has always sent.
+describe('urlchange carries its real shape (R3-874)', () => {
+  it("the sdk snapshot declares url/back/forward plus optional entryState/viewedDocument/replace", () => {
+    const ch = snapshot('sdk').channels['urlchange'] as unknown as {
+      payload: { fields: { name: string; optional: boolean; type?: string; union?: { type: string }[] }[] };
+    };
+    const byName = new Map(ch.payload.fields.map((f) => [f.name, f]));
+    expect([...byName.keys()]).toEqual(['back', 'entryState', 'forward', 'replace', 'url', 'viewedDocument']);
+    expect(byName.get('url')).toMatchObject({ optional: false, type: 'string' });
+    expect(byName.get('back')).toMatchObject({ optional: false, type: 'boolean' });
+    expect(byName.get('forward')).toMatchObject({ optional: false, type: 'boolean' });
+    expect(byName.get('replace')).toMatchObject({ optional: true, union: [{ type: 'false' }, { type: 'true' }, { type: 'undefined' }] });
+    expect(byName.get('entryState')).toMatchObject({
+      optional: true,
+      union: [{ type: 'Record<string, unknown>' }, { type: 'undefined' }],
+    });
+    expect(byName.get('viewedDocument')).toMatchObject({
+      optional: true,
+      union: [{ type: 'null' }, { type: 'string' }, { type: 'undefined' }],
+    });
+  });
+});
