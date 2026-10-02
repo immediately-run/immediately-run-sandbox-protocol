@@ -398,7 +398,7 @@ describe('urlchange carries its real shape (R3-874)', () => {
     expect(byName.get('url')).toMatchObject({ optional: false, type: 'string' });
     expect(byName.get('back')).toMatchObject({ optional: false, type: 'boolean' });
     expect(byName.get('forward')).toMatchObject({ optional: false, type: 'boolean' });
-    expect(byName.get('replace')).toMatchObject({ optional: true, union: [{ type: 'boolean' }, { type: 'undefined' }] });
+    expect(byName.get('replace')).toMatchObject({ optional: true, union: [{ type: 'false' }, { type: 'true' }, { type: 'undefined' }] });
     expect(byName.get('entryState')).toMatchObject({
       optional: true,
       union: [{ type: 'Record<string, unknown>' }, { type: 'undefined' }],

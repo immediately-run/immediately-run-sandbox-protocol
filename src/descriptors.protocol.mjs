@@ -4199,7 +4199,10 @@ export const CHANNELS = [
               "optional": true,
               "union": [
                 {
-                  "type": "boolean"
+                  "type": "false"
+                },
+                {
+                  "type": "true"
                 },
                 {
                   "type": "undefined"
