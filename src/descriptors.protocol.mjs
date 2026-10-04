@@ -3812,6 +3812,11 @@ export const CHANNELS = [
                 "type": "string"
               },
               {
+                "name": "readerCanEdit",
+                "optional": true,
+                "type": "boolean | undefined"
+              },
+              {
                 "name": "rules",
                 "optional": true,
                 "type": "MountRule[] | undefined"
