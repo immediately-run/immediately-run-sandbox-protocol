@@ -484,3 +484,37 @@ describe('resize is the frame’s content-height report', () => {
     });
   });
 });
+
+// A file manager asks the host to open a bundle in its own tab. The app names the directory
+// it holds, as a capability, and optionally a view by name — never a URL, a route or an app.
+// Pinned whole: an extra field here would be a way for an app to steer the destination.
+describe('protocol-openbundle open carries a directory capability and a view name, nothing else', () => {
+  type Field = { name: string; optional: boolean; type?: string; union?: { type: string }[]; fields?: Field[] };
+
+  it('the sdk snapshot declares `dir` as the four capability fields and `view` as an optional string', () => {
+    const ch = snapshot('sdk').channels['protocol-openbundle'] as unknown as {
+      kind: string;
+      direction: string;
+      methods: Record<string, { payload: { fields: Field[] } }>;
+    };
+    expect({ kind: ch.kind, direction: ch.direction }).toEqual({ kind: 'request', direction: 'app->host' });
+    expect(Object.keys(ch.methods)).toEqual(['open']);
+    const byName = new Map(ch.methods.open.payload.fields.map((f) => [f.name, f]));
+    expect([...byName.keys()]).toEqual(['dir', 'view']);
+    const dir = new Map((byName.get('dir')!.fields ?? []).map((f) => [f.name, f]));
+    expect(byName.get('dir')!.optional).toBe(false);
+    expect([...dir.keys()]).toEqual(['$cap', 'mode', 'mountId', 'relPath']);
+    expect(dir.get('$cap')).toMatchObject({ optional: false, type: '"dir"' });
+    expect(dir.get('mode')).toMatchObject({ optional: false, union: [{ type: '"ro"' }, { type: '"rw"' }] });
+    expect(dir.get('mountId')).toMatchObject({ optional: false, type: 'string' });
+    expect(dir.get('relPath')).toMatchObject({ optional: false, type: 'string' });
+    expect(byName.get('view')).toMatchObject({ optional: true, union: [{ type: 'string' }, { type: 'undefined' }] });
+  });
+
+  it('is in the sdk scheme family and the frame does not speak it', () => {
+    expect(snapshot('sandbox').channels['protocol-openbundle']).toBeUndefined();
+    const families = (snapshot('sdk') as unknown as { dynamicFamilies: Record<string, { schemes: string[] }> })
+      .dynamicFamilies;
+    expect(families['protocol-<scheme>'].schemes).toContain('openbundle');
+  });
+});
