@@ -409,3 +409,20 @@ describe('urlchange carries its real shape (R3-874)', () => {
     });
   });
 });
+
+// R3-861 — `fetch` gains the opt-in `responseType` field (binary responses
+// uncorrupted). Pinned in the R3-874 style: the publish is immutable, and this
+// repo is the last place that can change the answer.
+describe("protocol-fetch fetch carries responseType (R3-861)", () => {
+  it("the sdk snapshot declares the field as optional 'text' | 'bytes' | undefined", () => {
+    const ch = snapshot('sdk').channels['protocol-fetch'] as unknown as {
+      methods: Record<string, { payload: { fields: { name: string; optional: boolean; type?: string; union?: { type: string }[] }[] } }>;
+    };
+    const byName = new Map(ch.methods.fetch.payload.fields.map((f) => [f.name, f]));
+    expect([...byName.keys()]).toEqual(['body', 'headers', 'method', 'responseType', 'url']);
+    expect(byName.get('responseType')).toMatchObject({
+      optional: true,
+      union: [{ type: '"bytes"' }, { type: '"text"' }, { type: 'undefined' }],
+    });
+  });
+});

@@ -2028,6 +2028,21 @@ export const CHANNELS = [
                   ]
                 },
                 {
+                  "name": "responseType",
+                  "optional": true,
+                  "union": [
+                    {
+                      "type": "\"bytes\""
+                    },
+                    {
+                      "type": "\"text\""
+                    },
+                    {
+                      "type": "undefined"
+                    }
+                  ]
+                },
+                {
                   "name": "url",
                   "optional": false,
                   "type": "string"
