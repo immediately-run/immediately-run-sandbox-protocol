@@ -228,6 +228,7 @@ export const DYNAMIC_FAMILIES = {
         "launch",
         "llm",
         "localstore",
+        "openbundle",
         "openlink",
         "openrepo",
         "recents",
@@ -2369,6 +2370,71 @@ export const CHANNELS = [
         },
         "sites": [
           "src/mounts.ts"
+        ]
+      }
+    },
+    {
+      "name": "protocol-openbundle",
+      "const": "PROTOCOL_OPENBUNDLE",
+      "type": "ProtocolOpenbundle",
+      "sdk": {
+        "kind": "request",
+        "direction": "app->host",
+        "methods": {
+          "open": {
+            "payload": {
+              "fields": [
+                {
+                  "name": "dir",
+                  "optional": false,
+                  "fields": [
+                    {
+                      "name": "$cap",
+                      "optional": false,
+                      "type": "\"dir\""
+                    },
+                    {
+                      "name": "mode",
+                      "optional": false,
+                      "union": [
+                        {
+                          "type": "\"ro\""
+                        },
+                        {
+                          "type": "\"rw\""
+                        }
+                      ]
+                    },
+                    {
+                      "name": "mountId",
+                      "optional": false,
+                      "type": "string"
+                    },
+                    {
+                      "name": "relPath",
+                      "optional": false,
+                      "type": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "view",
+                  "optional": true,
+                  "union": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "undefined"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "sites": [
+          "src/openBundle.ts"
         ]
       }
     },
