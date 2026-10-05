@@ -3526,6 +3526,21 @@ export const CHANNELS = [
       }
     },
     {
+      "name": "request-task-input",
+      "const": "REQUEST_TASK_INPUT",
+      "type": "RequestTaskInput",
+      "sdk": {
+        "kind": "message",
+        "direction": "app->host",
+        "payload": {
+          "fields": []
+        },
+        "sites": [
+          "src/tasks.ts"
+        ]
+      }
+    },
+    {
       "name": "request-theme",
       "const": "REQUEST_THEME",
       "type": "RequestTheme",
@@ -4082,6 +4097,18 @@ export const CHANNELS = [
               "type": "string"
             },
             {
+              "name": "modeSelection",
+              "optional": true,
+              "union": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
+            },
+            {
               "name": "theme",
               "optional": false,
               "union": [
@@ -4117,6 +4144,7 @@ export const CHANNELS = [
         "payload": {
           "reads": [
             "modeId",
+            "modeSelection",
             "theme",
             "themeKey"
           ]
@@ -4125,6 +4153,11 @@ export const CHANNELS = [
           "fields": [
             {
               "name": "modeId",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "name": "modeSelection",
               "optional": false,
               "type": "string"
             },

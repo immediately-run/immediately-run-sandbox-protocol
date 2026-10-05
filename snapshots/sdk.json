@@ -2431,6 +2431,16 @@
         "src/spacesMode.ts"
       ]
     },
+    "request-task-input": {
+      "kind": "message",
+      "direction": "app->host",
+      "payload": {
+        "fields": []
+      },
+      "sites": [
+        "src/tasks.ts"
+      ]
+    },
     "request-theme": {
       "kind": "poll",
       "direction": "app->host",
@@ -2733,6 +2743,7 @@
       "payload": {
         "reads": [
           "modeId",
+          "modeSelection",
           "theme",
           "themeKey"
         ]
@@ -2741,6 +2752,11 @@
         "fields": [
           {
             "name": "modeId",
+            "optional": false,
+            "type": "string"
+          },
+          {
+            "name": "modeSelection",
             "optional": false,
             "type": "string"
           },

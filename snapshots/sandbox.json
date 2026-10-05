@@ -673,6 +673,18 @@
             "type": "string"
           },
           {
+            "name": "modeSelection",
+            "optional": true,
+            "union": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "undefined"
+              }
+            ]
+          },
+          {
             "name": "theme",
             "optional": false,
             "union": [
