@@ -673,6 +673,11 @@
             "type": "string"
           },
           {
+            "name": "modeSelection",
+            "optional": false,
+            "type": "string"
+          },
+          {
             "name": "theme",
             "optional": false,
             "union": [
