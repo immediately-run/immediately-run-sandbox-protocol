@@ -584,27 +584,6 @@ export const CHANNELS = [
       }
     },
     {
-      "name": "content-size",
-      "const": "CONTENT_SIZE",
-      "type": "ContentSize",
-      "sdk": {
-        "kind": "message",
-        "direction": "app->host",
-        "payload": {
-          "fields": [
-            {
-              "name": "height",
-              "optional": false,
-              "type": "number"
-            }
-          ]
-        },
-        "sites": [
-          "src/contentSize.ts"
-        ]
-      }
-    },
-    {
       "name": "debug-enabled",
       "const": "DEBUG_ENABLED",
       "type": "DebugEnabled",
@@ -4119,8 +4098,15 @@ export const CHANNELS = [
             },
             {
               "name": "modeSelection",
-              "optional": false,
-              "type": "string"
+              "optional": true,
+              "union": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
             },
             {
               "name": "theme",

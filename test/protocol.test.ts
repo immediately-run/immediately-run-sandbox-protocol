@@ -426,3 +426,61 @@ describe("protocol-fetch fetch carries responseType (R3-861)", () => {
     });
   });
 });
+
+// The task callee pulls its input. Pinned whole, because a published name is permanent and
+// the SDK's own gate only checks that its source matches whatever this repo publishes.
+describe('request-task-input is an app->host message with no payload', () => {
+  it('the sdk snapshot declares it, and the frame does not speak it', () => {
+    expect(snapshot('sdk').channels['request-task-input']).toMatchObject({
+      kind: 'message',
+      direction: 'app->host',
+      payload: { fields: [] },
+    });
+    expect(snapshot('sandbox').channels['request-task-input']).toBeUndefined();
+    // What it replays stays what it was: a host->app message, not a push with a poll twin.
+    expect(snapshot('sdk').channels['task-input']).toMatchObject({ kind: 'message', direction: 'host->app' });
+  });
+});
+
+// `modeSelection` rides beside `modeId` on the theme push: what was chosen, where `modeId`
+// is what is on screen.
+describe('theme carries modeSelection beside modeId', () => {
+  type Field = { name: string; optional: boolean; type?: string; union?: { type: string }[] };
+
+  it('the SDK reads it and types it a string on the value it exposes', () => {
+    const ch = snapshot('sdk').channels['theme'] as unknown as {
+      poll: string;
+      payload: { reads: string[] };
+      value: { fields: Field[] };
+    };
+    expect(ch.poll).toBe('request-theme');
+    expect(ch.payload.reads).toEqual(['modeId', 'modeSelection', 'theme', 'themeKey']);
+    const byName = new Map(ch.value.fields.map((f) => [f.name, f]));
+    expect([...byName.keys()]).toEqual(['modeId', 'modeSelection', 'theme', 'themeKey']);
+    expect(byName.get('modeSelection')).toMatchObject({ optional: false, type: 'string' });
+    expect(byName.get('modeId')).toMatchObject({ optional: false, type: 'string' });
+  });
+
+  it('the frame declares it optional — a host that predates the field does not send it — and does not read it', () => {
+    const ch = snapshot('sandbox').channels['theme'] as unknown as { payload: { fields: Field[]; reads: string[] } };
+    const byName = new Map(ch.payload.fields.map((f) => [f.name, f]));
+    expect([...byName.keys()]).toEqual(['modeId', 'modeSelection', 'theme', 'themeKey']);
+    expect(byName.get('modeSelection')).toMatchObject({
+      optional: true,
+      union: [{ type: 'string' }, { type: 'undefined' }],
+    });
+    expect(ch.payload.reads).toEqual(['modeId', 'theme', 'themeKey']);
+  });
+});
+
+// The frame already reports its document height. A second name for the same datum was
+// proposed and withdrawn before publishing; this is the one a host listens for.
+describe('resize is the frame’s content-height report', () => {
+  it('is an app->host message carrying a required numeric height', () => {
+    expect(snapshot('sandbox').channels['resize']).toMatchObject({
+      kind: 'message',
+      direction: 'app->host',
+      payload: { fields: [{ name: 'height', optional: false, type: 'number' }] },
+    });
+  });
+});

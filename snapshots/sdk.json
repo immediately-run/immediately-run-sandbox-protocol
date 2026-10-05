@@ -138,22 +138,6 @@
         "src/moduleCache.tsx"
       ]
     },
-    "content-size": {
-      "kind": "message",
-      "direction": "app->host",
-      "payload": {
-        "fields": [
-          {
-            "name": "height",
-            "optional": false,
-            "type": "number"
-          }
-        ]
-      },
-      "sites": [
-        "src/contentSize.ts"
-      ]
-    },
     "debug-enabled": {
       "kind": "push",
       "direction": "host->app",
