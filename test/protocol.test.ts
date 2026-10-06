@@ -468,11 +468,12 @@ describe('protocol-contribute run carries forceUpdateBranch and resume (R3-984)'
 // R3-964/986/987 — the vcs-state value gains the contribute forms' facts, every one
 // optional (an old host omits it). Pinned before the publish, like the run fields above.
 describe('vcs-state carries the save-form facts (R3-964/986/987)', () => {
+  type Field = { name: string; optional: boolean; type?: string; union?: unknown[] };
+  const vcsState = () =>
+    snapshot('sdk').channels['vcs-state'] as unknown as { payload: { reads: string[] }; value: { fields: Field[] } };
+
   it('the sdk snapshot declares each new field optional, beside the existing five', () => {
-    const ch = snapshot('sdk').channels['vcs-state'] as unknown as {
-      value: { fields: { name: string; optional: boolean; type?: string; union?: unknown[] }[] };
-    };
-    const byName = new Map(ch.value.fields.map((f) => [f.name, f]));
+    const byName = new Map(vcsState().value.fields.map((f) => [f.name, f]));
     expect([...byName.keys()]).toEqual([
       'agentSession',
       'branch',
@@ -481,30 +482,67 @@ describe('vcs-state carries the save-form facts (R3-964/986/987)', () => {
       'defaultSaveMode',
       'diffError',
       'diffLoading',
+      'diffWarnings',
       'excludedPhantoms',
       'manifestMissing',
+      'manifestTruncated',
       'openPR',
       'prs',
       'target',
-      'truncated',
-      'warnings',
     ]);
-    for (const k of [
+    for (const k of ['agentSession', ...[
       'canPushUpstream',
       'defaultSaveMode',
       'diffError',
+      'diffWarnings',
       'excludedPhantoms',
       'manifestMissing',
+      'manifestTruncated',
       'openPR',
       'target',
-      'truncated',
-      'warnings',
-    ]) {
+    ]]) {
       expect(byName.get(k)).toMatchObject({ optional: true });
     }
     for (const k of ['branch', 'changes', 'diffLoading', 'prs']) {
       expect(byName.get(k)).toMatchObject({ optional: false });
     }
+  });
+
+  // Pinned whole (type and every union member), so a wrong transcription fails here
+  // before the publish rather than in the SDK's gate after it.
+  it("pins each new field's shape", () => {
+    const byName = new Map(vcsState().value.fields.map(({ name, ...rest }) => [name, rest]));
+    const expected: Record<string, Omit<Field, 'name'>> = {
+      canPushUpstream: { optional: true, union: [{ type: 'false' }, { type: 'null' }, { type: 'true' }, { type: 'undefined' }] },
+      defaultSaveMode: { optional: true, union: [{ type: '"direct"' }, { type: '"pr"' }, { type: 'undefined' }] },
+      diffError: { optional: true, union: [{ type: 'null' }, { type: 'string' }, { type: 'undefined' }] },
+      diffWarnings: { optional: true, union: [{ type: 'string[]' }, { type: 'undefined' }] },
+      excludedPhantoms: { optional: true, union: [{ type: 'string[]' }, { type: 'undefined' }] },
+      manifestMissing: { optional: true, union: [{ type: 'false' }, { type: 'true' }, { type: 'undefined' }] },
+      manifestTruncated: { optional: true, union: [{ type: 'false' }, { type: 'true' }, { type: 'undefined' }] },
+      openPR: { optional: true, union: [{ type: 'null' }, { type: 'undefined' }, { type: '{ number: number; url: string; }' }] },
+      target: { optional: true, union: [{ type: 'VcsTarget' }, { type: 'null' }, { type: 'undefined' }] },
+    };
+    for (const [k, shape] of Object.entries(expected)) expect(byName.get(k)).toEqual(shape);
+  });
+
+  it('records every field the sdk parser reads', () => {
+    expect(vcsState().payload.reads).toEqual([
+      'agentSession',
+      'branch',
+      'canPushUpstream',
+      'changes',
+      'defaultSaveMode',
+      'diffError',
+      'diffLoading',
+      'diffWarnings',
+      'excludedPhantoms',
+      'manifestMissing',
+      'manifestTruncated',
+      'openPR',
+      'prs',
+      'target',
+    ]);
   });
 });
 

@@ -4647,9 +4647,18 @@ export const CHANNELS = [
           "reads": [
             "agentSession",
             "branch",
+            "canPushUpstream",
             "changes",
+            "defaultSaveMode",
+            "diffError",
             "diffLoading",
-            "prs"
+            "diffWarnings",
+            "excludedPhantoms",
+            "manifestMissing",
+            "manifestTruncated",
+            "openPR",
+            "prs",
+            "target"
           ]
         },
         "value": {
@@ -4742,6 +4751,18 @@ export const CHANNELS = [
               "type": "boolean"
             },
             {
+              "name": "diffWarnings",
+              "optional": true,
+              "union": [
+                {
+                  "type": "string[]"
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
+            },
+            {
               "name": "excludedPhantoms",
               "optional": true,
               "union": [
@@ -4755,6 +4776,21 @@ export const CHANNELS = [
             },
             {
               "name": "manifestMissing",
+              "optional": true,
+              "union": [
+                {
+                  "type": "false"
+                },
+                {
+                  "type": "true"
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
+            },
+            {
+              "name": "manifestTruncated",
               "optional": true,
               "union": [
                 {
@@ -4799,33 +4835,6 @@ export const CHANNELS = [
                 },
                 {
                   "type": "null"
-                },
-                {
-                  "type": "undefined"
-                }
-              ]
-            },
-            {
-              "name": "truncated",
-              "optional": true,
-              "union": [
-                {
-                  "type": "false"
-                },
-                {
-                  "type": "true"
-                },
-                {
-                  "type": "undefined"
-                }
-              ]
-            },
-            {
-              "name": "warnings",
-              "optional": true,
-              "union": [
-                {
-                  "type": "string[]"
                 },
                 {
                   "type": "undefined"

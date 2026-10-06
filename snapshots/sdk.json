@@ -3118,9 +3118,18 @@
         "reads": [
           "agentSession",
           "branch",
+          "canPushUpstream",
           "changes",
+          "defaultSaveMode",
+          "diffError",
           "diffLoading",
-          "prs"
+          "diffWarnings",
+          "excludedPhantoms",
+          "manifestMissing",
+          "manifestTruncated",
+          "openPR",
+          "prs",
+          "target"
         ]
       },
       "value": {
@@ -3213,6 +3222,18 @@
             "type": "boolean"
           },
           {
+            "name": "diffWarnings",
+            "optional": true,
+            "union": [
+              {
+                "type": "string[]"
+              },
+              {
+                "type": "undefined"
+              }
+            ]
+          },
+          {
             "name": "excludedPhantoms",
             "optional": true,
             "union": [
@@ -3226,6 +3247,21 @@
           },
           {
             "name": "manifestMissing",
+            "optional": true,
+            "union": [
+              {
+                "type": "false"
+              },
+              {
+                "type": "true"
+              },
+              {
+                "type": "undefined"
+              }
+            ]
+          },
+          {
+            "name": "manifestTruncated",
             "optional": true,
             "union": [
               {
@@ -3270,33 +3306,6 @@
               },
               {
                 "type": "null"
-              },
-              {
-                "type": "undefined"
-              }
-            ]
-          },
-          {
-            "name": "truncated",
-            "optional": true,
-            "union": [
-              {
-                "type": "false"
-              },
-              {
-                "type": "true"
-              },
-              {
-                "type": "undefined"
-              }
-            ]
-          },
-          {
-            "name": "warnings",
-            "optional": true,
-            "union": [
-              {
-                "type": "string[]"
               },
               {
                 "type": "undefined"
