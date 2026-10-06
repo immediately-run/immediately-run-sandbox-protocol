@@ -2284,6 +2284,140 @@
           "payload": {
             "type": "Record<string, unknown>"
           }
+        },
+        "bundleCanWrite": {
+          "payload": {
+            "fields": [
+              {
+                "name": "mountId",
+                "optional": false,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "bundleDiffPaths": {
+          "payload": {
+            "fields": [
+              {
+                "name": "from",
+                "optional": false,
+                "type": "string"
+              },
+              {
+                "name": "mountId",
+                "optional": false,
+                "type": "string"
+              },
+              {
+                "name": "to",
+                "optional": false,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "bundleHead": {
+          "payload": {
+            "fields": [
+              {
+                "name": "mountId",
+                "optional": false,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "bundleIsAncestor": {
+          "payload": {
+            "fields": [
+              {
+                "name": "a",
+                "optional": false,
+                "type": "string"
+              },
+              {
+                "name": "b",
+                "optional": false,
+                "type": "string"
+              },
+              {
+                "name": "mountId",
+                "optional": false,
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "bundleLog": {
+          "payload": {
+            "fields": [
+              {
+                "name": "max",
+                "optional": true,
+                "union": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "undefined"
+                  }
+                ]
+              },
+              {
+                "name": "mountId",
+                "optional": false,
+                "type": "string"
+              },
+              {
+                "name": "since",
+                "optional": true,
+                "union": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "undefined"
+                  }
+                ]
+              },
+              {
+                "name": "until",
+                "optional": true,
+                "union": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "undefined"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "bundleRead": {
+          "payload": {
+            "fields": [
+              {
+                "name": "mountId",
+                "optional": false,
+                "type": "string"
+              },
+              {
+                "name": "paths",
+                "optional": false,
+                "array": {
+                  "type": "string"
+                }
+              },
+              {
+                "name": "sha",
+                "optional": false,
+                "type": "string"
+              }
+            ]
+          }
         }
       },
       "sites": [

@@ -518,3 +518,50 @@ describe('protocol-openbundle open carries a directory capability and a view nam
     expect(families['protocol-<scheme>'].schemes).toContain('openbundle');
   });
 });
+
+// R3-954 — the six bundle history reads (COLLABORATION_SESSIONS §16) beside `<dynamic>`.
+// Pinned whole before the immutable publish: each method's fields, their optionality, and
+// the `T | undefined` union an optional field must carry (R3-633f) — a drifted hand edit
+// regenerates consistently and would otherwise surface only in the SDK after publishing.
+describe('protocol-vcs carries the six bundle history methods with exact fields', () => {
+  type Field = { name: string; optional: boolean; type?: string; union?: { type: string }[]; array?: { type: string } };
+  const ch = () =>
+    snapshot('sdk').channels['protocol-vcs'] as unknown as {
+      kind: string;
+      direction: string;
+      methods: Record<string, { payload: { fields?: Field[]; type?: string } }>;
+    };
+  const required = (name: string, type: string) => ({ name, optional: false, type });
+  const optional = (name: string, type: string) => ({ name, optional: true, union: [{ type }, { type: 'undefined' }] });
+
+  it('keeps <dynamic> and adds exactly the six methods', () => {
+    expect({ kind: ch().kind, direction: ch().direction }).toEqual({ kind: 'request', direction: 'app->host' });
+    expect(Object.keys(ch().methods)).toEqual([
+      '<dynamic>',
+      'bundleCanWrite',
+      'bundleDiffPaths',
+      'bundleHead',
+      'bundleIsAncestor',
+      'bundleLog',
+      'bundleRead',
+    ]);
+    expect(ch().methods['<dynamic>'].payload).toEqual({ type: 'Record<string, unknown>' });
+  });
+
+  it.each([
+    ['bundleHead', [required('mountId', 'string')]],
+    ['bundleCanWrite', [required('mountId', 'string')]],
+    ['bundleDiffPaths', [required('from', 'string'), required('mountId', 'string'), required('to', 'string')]],
+    ['bundleIsAncestor', [required('a', 'string'), required('b', 'string'), required('mountId', 'string')]],
+    [
+      'bundleLog',
+      [optional('max', 'number'), required('mountId', 'string'), optional('since', 'string'), optional('until', 'string')],
+    ],
+    [
+      'bundleRead',
+      [required('mountId', 'string'), { name: 'paths', optional: false, array: { type: 'string' } }, required('sha', 'string')],
+    ],
+  ])('%s', (method, fields) => {
+    expect(ch().methods[method].payload.fields).toEqual(fields);
+  });
+});
