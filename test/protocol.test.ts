@@ -509,7 +509,9 @@ describe('vcs-state carries the save-form facts (R3-964/986/987)', () => {
   });
 
   // Pinned whole (type and every union member), so a wrong transcription fails here
-  // before the publish rather than in the SDK's gate after it.
+  // before the publish rather than in the SDK's gate after it. A named interface
+  // (VcsTarget, VcsDiffWarning) is recorded by name only: the extractor stops at depth 2,
+  // so its own fields are frozen by the SDK's api-snapshot, not by this test.
   it("pins each new field's shape", () => {
     const byName = new Map(vcsState().value.fields.map(({ name, ...rest }) => [name, rest]));
     const expected: Record<string, Omit<Field, 'name'>> = {
