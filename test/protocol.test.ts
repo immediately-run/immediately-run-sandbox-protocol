@@ -465,6 +465,49 @@ describe('protocol-contribute run carries forceUpdateBranch and resume (R3-984)'
   });
 });
 
+// R3-964/986/987 — the vcs-state value gains the contribute forms' facts, every one
+// optional (an old host omits it). Pinned before the publish, like the run fields above.
+describe('vcs-state carries the save-form facts (R3-964/986/987)', () => {
+  it('the sdk snapshot declares each new field optional, beside the existing five', () => {
+    const ch = snapshot('sdk').channels['vcs-state'] as unknown as {
+      value: { fields: { name: string; optional: boolean; type?: string; union?: unknown[] }[] };
+    };
+    const byName = new Map(ch.value.fields.map((f) => [f.name, f]));
+    expect([...byName.keys()]).toEqual([
+      'agentSession',
+      'branch',
+      'canPushUpstream',
+      'changes',
+      'defaultSaveMode',
+      'diffError',
+      'diffLoading',
+      'excludedPhantoms',
+      'manifestMissing',
+      'openPR',
+      'prs',
+      'target',
+      'truncated',
+      'warnings',
+    ]);
+    for (const k of [
+      'canPushUpstream',
+      'defaultSaveMode',
+      'diffError',
+      'excludedPhantoms',
+      'manifestMissing',
+      'openPR',
+      'target',
+      'truncated',
+      'warnings',
+    ]) {
+      expect(byName.get(k)).toMatchObject({ optional: true });
+    }
+    for (const k of ['branch', 'changes', 'diffLoading', 'prs']) {
+      expect(byName.get(k)).toMatchObject({ optional: false });
+    }
+  });
+});
+
 // The task callee pulls its input. Pinned whole, because a published name is permanent and
 // the SDK's own gate only checks that its source matches whatever this repo publishes.
 describe('request-task-input is an app->host message with no payload', () => {
