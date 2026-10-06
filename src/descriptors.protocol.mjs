@@ -4647,9 +4647,18 @@ export const CHANNELS = [
           "reads": [
             "agentSession",
             "branch",
+            "canPushUpstream",
             "changes",
+            "defaultSaveMode",
+            "diffError",
             "diffLoading",
-            "prs"
+            "diffWarnings",
+            "excludedPhantoms",
+            "manifestMissing",
+            "manifestTruncated",
+            "openPR",
+            "prs",
+            "target"
           ]
         },
         "value": {
@@ -4682,6 +4691,24 @@ export const CHANNELS = [
               ]
             },
             {
+              "name": "canPushUpstream",
+              "optional": true,
+              "union": [
+                {
+                  "type": "false"
+                },
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "true"
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
+            },
+            {
               "name": "changes",
               "optional": false,
               "array": {
@@ -4689,9 +4716,108 @@ export const CHANNELS = [
               }
             },
             {
+              "name": "defaultSaveMode",
+              "optional": true,
+              "union": [
+                {
+                  "type": "\"direct\""
+                },
+                {
+                  "type": "\"pr\""
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
+            },
+            {
+              "name": "diffError",
+              "optional": true,
+              "union": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
+            },
+            {
               "name": "diffLoading",
               "optional": false,
               "type": "boolean"
+            },
+            {
+              "name": "diffWarnings",
+              "optional": true,
+              "union": [
+                {
+                  "type": "VcsDiffWarning[]"
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
+            },
+            {
+              "name": "excludedPhantoms",
+              "optional": true,
+              "union": [
+                {
+                  "type": "string[]"
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
+            },
+            {
+              "name": "manifestMissing",
+              "optional": true,
+              "union": [
+                {
+                  "type": "false"
+                },
+                {
+                  "type": "true"
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
+            },
+            {
+              "name": "manifestTruncated",
+              "optional": true,
+              "union": [
+                {
+                  "type": "false"
+                },
+                {
+                  "type": "true"
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
+            },
+            {
+              "name": "openPR",
+              "optional": true,
+              "union": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "undefined"
+                },
+                {
+                  "type": "{ number: number; url: string; }"
+                }
+              ]
             },
             {
               "name": "prs",
@@ -4699,6 +4825,21 @@ export const CHANNELS = [
               "array": {
                 "type": "VcsPR"
               }
+            },
+            {
+              "name": "target",
+              "optional": true,
+              "union": [
+                {
+                  "type": "VcsTarget"
+                },
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
             }
           ],
           "type": "VcsState"
