@@ -427,6 +427,44 @@ describe("protocol-fetch fetch carries responseType (R3-861)", () => {
   });
 });
 
+// R3-984 — `run` gains the two recovery inputs: forceUpdateBranch (CONTRIBUTE_SPEC §8.8)
+// and the open-pr resume (CT-6). Pinned in the R3-874 style before the publish.
+describe('protocol-contribute run carries forceUpdateBranch and resume (R3-984)', () => {
+  it('the sdk snapshot declares both as optional, resume as the open-pr member', () => {
+    const ch = snapshot('sdk').channels['protocol-contribute'] as unknown as {
+      methods: Record<
+        string,
+        { payload: { fields: { name: string; optional: boolean; type?: string; union?: unknown[] }[] } }
+      >;
+    };
+    const byName = new Map(ch.methods.run.payload.fields.map((f) => [f.name, f]));
+    expect([...byName.keys()]).toEqual([
+      'branchName',
+      'commitMessage',
+      'forceUpdateBranch',
+      'mode',
+      'resume',
+      'transcriptRequested',
+    ]);
+    expect(byName.get('forceUpdateBranch')).toMatchObject({
+      optional: true,
+      union: [{ type: 'false' }, { type: 'true' }, { type: 'undefined' }],
+    });
+    expect(byName.get('resume')).toMatchObject({
+      optional: true,
+      union: [
+        {
+          fields: [
+            { name: 'context', optional: false, type: 'OpenPRResumeContext' },
+            { name: 'kind', optional: false, type: '"open-pr"' },
+          ],
+        },
+        { type: 'undefined' },
+      ],
+    });
+  });
+});
+
 // The task callee pulls its input. Pinned whole, because a published name is permanent and
 // the SDK's own gate only checks that its source matches whatever this repo publishes.
 describe('request-task-input is an app->host message with no payload', () => {

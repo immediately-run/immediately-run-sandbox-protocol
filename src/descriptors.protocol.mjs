@@ -1679,6 +1679,21 @@ export const CHANNELS = [
                   "type": "string"
                 },
                 {
+                  "name": "forceUpdateBranch",
+                  "optional": true,
+                  "union": [
+                    {
+                      "type": "false"
+                    },
+                    {
+                      "type": "true"
+                    },
+                    {
+                      "type": "undefined"
+                    }
+                  ]
+                },
+                {
                   "name": "mode",
                   "optional": true,
                   "union": [
@@ -1687,6 +1702,29 @@ export const CHANNELS = [
                     },
                     {
                       "type": "\"pr\""
+                    },
+                    {
+                      "type": "undefined"
+                    }
+                  ]
+                },
+                {
+                  "name": "resume",
+                  "optional": true,
+                  "union": [
+                    {
+                      "fields": [
+                        {
+                          "name": "context",
+                          "optional": false,
+                          "type": "OpenPRResumeContext"
+                        },
+                        {
+                          "name": "kind",
+                          "optional": false,
+                          "type": "\"open-pr\""
+                        }
+                      ]
                     },
                     {
                       "type": "undefined"
