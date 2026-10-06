@@ -516,7 +516,7 @@ describe('vcs-state carries the save-form facts (R3-964/986/987)', () => {
       canPushUpstream: { optional: true, union: [{ type: 'false' }, { type: 'null' }, { type: 'true' }, { type: 'undefined' }] },
       defaultSaveMode: { optional: true, union: [{ type: '"direct"' }, { type: '"pr"' }, { type: 'undefined' }] },
       diffError: { optional: true, union: [{ type: 'null' }, { type: 'string' }, { type: 'undefined' }] },
-      diffWarnings: { optional: true, union: [{ type: 'string[]' }, { type: 'undefined' }] },
+      diffWarnings: { optional: true, union: [{ type: 'VcsDiffWarning[]' }, { type: 'undefined' }] },
       excludedPhantoms: { optional: true, union: [{ type: 'string[]' }, { type: 'undefined' }] },
       manifestMissing: { optional: true, union: [{ type: 'false' }, { type: 'true' }, { type: 'undefined' }] },
       manifestTruncated: { optional: true, union: [{ type: 'false' }, { type: 'true' }, { type: 'undefined' }] },

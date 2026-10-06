@@ -4755,7 +4755,7 @@ export const CHANNELS = [
               "optional": true,
               "union": [
                 {
-                  "type": "string[]"
+                  "type": "VcsDiffWarning[]"
                 },
                 {
                   "type": "undefined"
