@@ -2530,11 +2530,18 @@ export const CHANNELS = [
                 {
                   "name": "reveal",
                   "optional": true,
-                  "fields": [
+                  "union": [
                     {
-                      "name": "panel",
-                      "optional": false,
-                      "type": "\"agent\""
+                      "fields": [
+                        {
+                          "name": "panel",
+                          "optional": false,
+                          "type": "\"agent\""
+                        }
+                      ]
+                    },
+                    {
+                      "type": "undefined"
                     }
                   ]
                 }
