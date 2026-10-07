@@ -2526,6 +2526,17 @@ export const CHANNELS = [
                   "name": "repository",
                   "optional": false,
                   "type": "string"
+                },
+                {
+                  "name": "reveal",
+                  "optional": true,
+                  "fields": [
+                    {
+                      "name": "panel",
+                      "optional": false,
+                      "type": "\"agent\""
+                    }
+                  ]
                 }
               ]
             }
