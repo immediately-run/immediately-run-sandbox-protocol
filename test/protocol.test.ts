@@ -686,3 +686,38 @@ describe('protocol-vcs carries the six bundle history methods with exact fields'
     expect(ch().methods[method].payload.fields).toEqual(fields);
   });
 });
+
+// R3-1033 — the reveal on `protocol-openrepo` is the contract the whole open-repository
+// chain gates against (the SDK wrapper sends it, the host handler consumes it), so its
+// shape is pinned HERE, at the contract's own repo, read from the real projected snapshot
+// (the producer), never a literal retyped.
+describe('protocol-openrepo carries the optional reveal (R3-1033)', () => {
+  const fields = () =>
+    (
+      snapshot('sdk').channels['protocol-openrepo'] as unknown as {
+        methods: {
+          open: { payload: { fields: Array<{ name: string; optional: boolean; type?: string; fields?: Array<{ name: string; optional: boolean; type: string }> }> } };
+        };
+      }
+    ).methods.open.payload.fields;
+  const byName = (name: string) => fields().find((f) => f.name === name);
+
+  it('the three coordinates stay required and flat', () => {
+    for (const name of ['namespace', 'provider', 'repository']) {
+      expect(byName(name)).toEqual({ name, optional: false, type: 'string' });
+    }
+  });
+
+  it('reveal is optional and nested, the panel a closed literal', () => {
+    expect(byName('reveal')).toEqual({
+      name: 'reveal',
+      optional: true,
+      union: [
+        {
+          fields: [{ name: 'panel', optional: false, type: '"agent"' }],
+        },
+        { type: 'undefined' },
+      ],
+    });
+  });
+});
