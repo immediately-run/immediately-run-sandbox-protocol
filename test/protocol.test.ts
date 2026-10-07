@@ -251,35 +251,66 @@ describe('the constants are the names, verbatim', () => {
   });
 });
 
-// R3-620 review (BLOCKING) — the extractor that fingerprints a push channel's `value`
-// (immediately-run-sdk/scripts/check-protocol-snapshot.mjs) starts at depth 1 with
-// MAX_DEPTH=2. A UNION value consumes one depth level: its object members sit at depth 2 and
-// their FIELDS at depth 3, where the extractor can only emit a flat `{type}` — an inline
-// `fields`/`array`/`union` there is a shape the consumer can never produce, stranding the
-// SDK's `protocol:check` behind a corrective re-publish (the same class the field-order gate
+// R3-620 review (BLOCKING), rule UPDATED by R3-996 — the extractor that fingerprints a push
+// channel's `value` (immediately-run-sdk/scripts/check-protocol-snapshot.mjs) starts at depth 1
+// with MAX_DEPTH=2. A UNION value consumes one depth level: its object members sit at depth 2
+// and their FIELDS at depth 3, the extractor's cap. Before R3-996 the cap could only emit a
+// flat `{type}` there. Since R3-996 it emits exactly one of THREE shapes for such a field:
+// a flat `{type}` text; `{fields, type}` when the field's type is a NAMED OBJECT declared in
+// the SDK's own src/ (expanded one level — every nested field a flat type text, never a
+// further inline shape); or `{array: {fields, type}}` for an array OF such a type. Anything
+// else at that position is a shape the consumer can never produce, stranding the SDK's
+// `protocol:check` behind a corrective re-publish (the same class the field-order gate
 // records). A NON-union value's fields land at depth 2 and MAY be structured (e.g.
 // `fs-change.paths` is `{array:{type:"string"}}`), so the rule — and this walk — is scoped to
 // union-member fields only.
-describe('a union-valued push channel\'s fields are flat type references the extractor can produce', () => {
+describe("a union-valued push channel's fields are shapes the capped extractor can produce", () => {
+  type Desc = {
+    name?: unknown;
+    optional?: unknown;
+    type?: unknown;
+    fields?: unknown;
+    array?: unknown;
+    union?: unknown;
+  };
+  /** The cap's named-object expansion: `{fields, type}`, every nested field flat text. */
+  const isExpansion = (d: unknown): boolean => {
+    if (!d || typeof d !== 'object') return false;
+    const o = d as Desc;
+    if (o.array !== undefined || o.union !== undefined) return false;
+    if (typeof o.type !== 'string' || !Array.isArray(o.fields)) return false;
+    return (o.fields as Desc[]).every(
+      (n) =>
+        typeof n.name === 'string' &&
+        typeof n.optional === 'boolean' &&
+        typeof n.type === 'string' &&
+        n.fields === undefined &&
+        n.array === undefined &&
+        n.union === undefined,
+    );
+  };
   let sawUnionMemberFields = false;
 
-  it('no union-member value field inlines a shape the depth-2 extractor flattens', () => {
+  it('no union-member value field inlines a shape the capped extractor cannot produce', () => {
     for (const [name, entryRaw] of Object.entries(snapshot('sdk').channels)) {
       const entry = entryRaw as {
         kind?: string;
-        value?: { union?: { fields?: { name: string; type?: unknown; fields?: unknown; array?: unknown; union?: unknown }[] }[] };
+        value?: { union?: { fields?: Desc[] }[] };
       };
       if (entry.kind !== 'push') continue;
       let inspected = 0;
       for (const member of entry.value?.union ?? []) {
         for (const f of member.fields ?? []) {
           inspected += 1;
-          const nested = f.fields !== undefined || f.array !== undefined || f.union !== undefined;
-          if (nested) {
-            throw new Error(`${name}: value field ${f.name} is an inline shape, not a flat type reference`);
-          }
-          if (typeof f.type !== 'string') {
-            throw new Error(`${name}: value field ${f.name} has no flat type`);
+          const flat =
+            f.fields === undefined && f.array === undefined && f.union === undefined && typeof f.type === 'string';
+          const arrayOfExpanded =
+            f.array !== undefined && f.fields === undefined && f.union === undefined && f.type === undefined && isExpansion(f.array);
+          if (!flat && !isExpansion(f) && !arrayOfExpanded) {
+            throw new Error(
+              `${name}: value field ${String(f.name)} is not a shape the capped extractor produces ` +
+                '(flat type text, a named-object expansion, or an array of one)',
+            );
           }
         }
       }
@@ -509,21 +540,55 @@ describe('vcs-state carries the save-form facts (R3-964/986/987)', () => {
   });
 
   // Pinned whole (type and every union member), so a wrong transcription fails here
-  // before the publish rather than in the SDK's gate after it. A named interface
-  // (VcsTarget, VcsDiffWarning) is recorded by name only: the extractor stops at depth 2,
-  // so its own fields are frozen by the SDK's api-snapshot, not by this test.
+  // before the publish rather than in the SDK's gate after it. Since R3-996 a named
+  // interface (VcsTarget, VcsDiffWarning) is recorded name-PLUS-FIELDS: the SDK
+  // extractor's depth cap expands this vocabulary's own named object types one level
+  // further, so this snapshot freezes their fields too — the next describe block pins
+  // each sub-type whole.
   it("pins each new field's shape", () => {
     const byName = new Map(vcsState().value.fields.map(({ name, ...rest }) => [name, rest]));
     const expected: Record<string, Omit<Field, 'name'>> = {
       canPushUpstream: { optional: true, union: [{ type: 'false' }, { type: 'null' }, { type: 'true' }, { type: 'undefined' }] },
       defaultSaveMode: { optional: true, union: [{ type: '"direct"' }, { type: '"pr"' }, { type: 'undefined' }] },
       diffError: { optional: true, union: [{ type: 'null' }, { type: 'string' }, { type: 'undefined' }] },
-      diffWarnings: { optional: true, union: [{ type: 'VcsDiffWarning[]' }, { type: 'undefined' }] },
+      diffWarnings: {
+        optional: true,
+        union: [
+          {
+            array: {
+              fields: [
+                { name: 'kind', optional: false, type: 'string' },
+                { name: 'message', optional: false, type: 'string' },
+                { name: 'path', optional: false, type: 'string' },
+              ],
+              type: 'VcsDiffWarning',
+            },
+          },
+          { type: 'undefined' },
+        ],
+      },
       excludedPhantoms: { optional: true, union: [{ type: 'string[]' }, { type: 'undefined' }] },
       manifestMissing: { optional: true, union: [{ type: 'false' }, { type: 'true' }, { type: 'undefined' }] },
       manifestTruncated: { optional: true, union: [{ type: 'false' }, { type: 'true' }, { type: 'undefined' }] },
       openPR: { optional: true, union: [{ type: 'null' }, { type: 'undefined' }, { type: '{ number: number; url: string; }' }] },
-      target: { optional: true, union: [{ type: 'VcsTarget' }, { type: 'null' }, { type: 'undefined' }] },
+      target: {
+        optional: true,
+        union: [
+          {
+            fields: [
+              { name: 'commitSha', optional: false, type: 'string | null' },
+              { name: 'defaultBranch', optional: false, type: 'string | null' },
+              { name: 'namespace', optional: false, type: 'string' },
+              { name: 'ref', optional: false, type: 'string' },
+              { name: 'refKind', optional: false, type: '"branch" | "tag" | "commit"' },
+              { name: 'repository', optional: false, type: 'string' },
+            ],
+            type: 'VcsTarget',
+          },
+          { type: 'null' },
+          { type: 'undefined' },
+        ],
+      },
     };
     for (const [k, shape] of Object.entries(expected)) expect(byName.get(k)).toEqual(shape);
   });
@@ -545,6 +610,95 @@ describe('vcs-state carries the save-form facts (R3-964/986/987)', () => {
       'prs',
       'target',
     ]);
+  });
+});
+
+// R3-996 — the vcs-state value's named sub-types were recorded by NAME only (the SDK
+// extractor's depth cap stopped before their shapes), so adding a member to
+// `VcsTarget.refKind` or renaming `VcsDiffWarning.path` left the snapshot
+// byte-identical while the SDK's fail-closed `parseTarget` dropped the whole target on
+// the host's next push. The cap now expands this vocabulary's own named object types
+// one level further (fields as type text). These pins hold the projection side; the
+// SDK's extractor self-test (`protocol:selftest`) holds the extraction side.
+describe('vcs-state records its named sub-types with their fields (R3-996)', () => {
+  type Shape = { fields?: { name: string; optional: boolean; type: string }[]; type?: string };
+  const valueFields = () =>
+    (
+      snapshot('sdk').channels['vcs-state'] as unknown as {
+        value: { fields: { name: string }[] };
+      }
+    ).value.fields as unknown as Record<string, unknown>[];
+  const field = (name: string) => valueFields().find((f) => f.name === name);
+  const member = (name: string, i: number) => (field(name) as { union: Shape[] }).union[i];
+
+  it('pins VcsTarget field-for-field — the refKind union and both nullabilities', () => {
+    expect(member('target', 0)).toEqual({
+      fields: [
+        { name: 'commitSha', optional: false, type: 'string | null' },
+        { name: 'defaultBranch', optional: false, type: 'string | null' },
+        { name: 'namespace', optional: false, type: 'string' },
+        { name: 'ref', optional: false, type: 'string' },
+        { name: 'refKind', optional: false, type: '"branch" | "tag" | "commit"' },
+        { name: 'repository', optional: false, type: 'string' },
+      ],
+      type: 'VcsTarget',
+    });
+  });
+
+  it('pins VcsDiffWarning through its array wrapper', () => {
+    expect(member('diffWarnings', 0)).toEqual({
+      array: {
+        fields: [
+          { name: 'kind', optional: false, type: 'string' },
+          { name: 'message', optional: false, type: 'string' },
+          { name: 'path', optional: false, type: 'string' },
+        ],
+        type: 'VcsDiffWarning',
+      },
+    });
+  });
+
+  it('pins VcsBranch and VcsAgentSession field-for-field', () => {
+    expect(member('branch', 0)).toEqual({
+      fields: [
+        { name: 'name', optional: false, type: 'string' },
+        { name: 'parentCommitSha', optional: false, type: 'string' },
+        { name: 'parentRef', optional: false, type: 'string' },
+        { name: 'parentRepo', optional: false, type: 'string' },
+        { name: 'upstreamPushable', optional: false, type: 'boolean | null' },
+      ],
+      type: 'VcsBranch',
+    });
+    expect(member('agentSession', 0)).toEqual({
+      fields: [
+        { name: 'conversationId', optional: false, type: 'string' },
+        { name: 'messageCount', optional: false, type: 'number' },
+        { name: 'repo', optional: false, type: 'string' },
+        { name: 'running', optional: false, type: 'boolean' },
+        { name: 'updatedAt', optional: true, type: 'number | undefined' },
+      ],
+      type: 'VcsAgentSession',
+    });
+  });
+
+  it('pins VcsChange and VcsPR through their array wrappers', () => {
+    expect((field('changes') as { array: Shape }).array).toEqual({
+      fields: [
+        { name: 'path', optional: false, type: 'string' },
+        { name: 'status', optional: false, type: '"created" | "modified" | "deleted"' },
+      ],
+      type: 'VcsChange',
+    });
+    expect((field('prs') as { array: Shape }).array).toEqual({
+      fields: [
+        { name: 'draft', optional: false, type: 'boolean' },
+        { name: 'number', optional: false, type: 'number' },
+        { name: 'state', optional: false, type: '"open" | "closed" | "merged"' },
+        { name: 'title', optional: false, type: 'string' },
+        { name: 'url', optional: false, type: 'string' },
+      ],
+      type: 'VcsPR',
+    });
   });
 });
 

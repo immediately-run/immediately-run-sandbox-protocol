@@ -487,6 +487,13 @@ export const CHANNELS = [
               "optional": false,
               "union": [
                 {
+                  "fields": [
+                    {
+                      "name": "login",
+                      "optional": false,
+                      "type": "string"
+                    }
+                  ],
                   "type": "SandboxUser"
                 },
                 {
@@ -749,6 +756,28 @@ export const CHANNELS = [
               "name": "buildErrors",
               "optional": false,
               "array": {
+                "fields": [
+                  {
+                    "name": "column",
+                    "optional": true,
+                    "type": "number | undefined"
+                  },
+                  {
+                    "name": "line",
+                    "optional": true,
+                    "type": "number | undefined"
+                  },
+                  {
+                    "name": "message",
+                    "optional": false,
+                    "type": "string"
+                  },
+                  {
+                    "name": "path",
+                    "optional": true,
+                    "type": "string | undefined"
+                  }
+                ],
                 "type": "BuildError"
               }
             },
@@ -756,6 +785,23 @@ export const CHANNELS = [
               "name": "consoleEntries",
               "optional": false,
               "array": {
+                "fields": [
+                  {
+                    "name": "at",
+                    "optional": false,
+                    "type": "number"
+                  },
+                  {
+                    "name": "level",
+                    "optional": false,
+                    "type": "ConsoleLevel"
+                  },
+                  {
+                    "name": "text",
+                    "optional": false,
+                    "type": "string"
+                  }
+                ],
                 "type": "ConsoleEntry"
               }
             },
@@ -764,6 +810,18 @@ export const CHANNELS = [
               "optional": false,
               "union": [
                 {
+                  "fields": [
+                    {
+                      "name": "appKey",
+                      "optional": true,
+                      "type": "string | undefined"
+                    },
+                    {
+                      "name": "compileId",
+                      "optional": true,
+                      "type": "string | undefined"
+                    }
+                  ],
                   "type": "DiagnosticsProvenance"
                 },
                 {
@@ -1491,6 +1549,33 @@ export const CHANNELS = [
                 {
                   "name": "features",
                   "optional": false,
+                  "fields": [
+                    {
+                      "name": "jsonMode",
+                      "optional": false,
+                      "type": "boolean"
+                    },
+                    {
+                      "name": "maxContextTokens",
+                      "optional": false,
+                      "type": "number"
+                    },
+                    {
+                      "name": "reasoning",
+                      "optional": false,
+                      "type": "boolean"
+                    },
+                    {
+                      "name": "tools",
+                      "optional": false,
+                      "type": "boolean"
+                    },
+                    {
+                      "name": "vision",
+                      "optional": false,
+                      "type": "boolean"
+                    }
+                  ],
                   "type": "ChatFeatures"
                 },
                 {
@@ -1717,6 +1802,33 @@ export const CHANNELS = [
                         {
                           "name": "context",
                           "optional": false,
+                          "fields": [
+                            {
+                              "name": "base",
+                              "optional": false,
+                              "type": "string"
+                            },
+                            {
+                              "name": "branchName",
+                              "optional": false,
+                              "type": "string"
+                            },
+                            {
+                              "name": "head",
+                              "optional": false,
+                              "type": "string"
+                            },
+                            {
+                              "name": "pushOwner",
+                              "optional": false,
+                              "type": "string"
+                            },
+                            {
+                              "name": "repository",
+                              "optional": false,
+                              "type": "string"
+                            }
+                          ],
                           "type": "OpenPRResumeContext"
                         },
                         {
@@ -2375,6 +2487,23 @@ export const CHANNELS = [
                   "union": [
                     {
                       "array": {
+                        "fields": [
+                          {
+                            "name": "description",
+                            "optional": true,
+                            "type": "string | undefined"
+                          },
+                          {
+                            "name": "inputSchema",
+                            "optional": false,
+                            "type": "Record<string, unknown>"
+                          },
+                          {
+                            "name": "name",
+                            "optional": false,
+                            "type": "string"
+                          }
+                        ],
                         "type": "ToolDef"
                       }
                     },
@@ -4141,6 +4270,38 @@ export const CHANNELS = [
                 {
                   "name": "route",
                   "optional": false,
+                  "fields": [
+                    {
+                      "name": "activity",
+                      "optional": false,
+                      "type": "SpacesActivity"
+                    },
+                    {
+                      "name": "member",
+                      "optional": true,
+                      "type": "string | undefined"
+                    },
+                    {
+                      "name": "path",
+                      "optional": true,
+                      "type": "string | undefined"
+                    },
+                    {
+                      "name": "roomId",
+                      "optional": true,
+                      "type": "string | undefined"
+                    },
+                    {
+                      "name": "section",
+                      "optional": true,
+                      "type": "string | undefined"
+                    },
+                    {
+                      "name": "spaceId",
+                      "optional": false,
+                      "type": "string | null"
+                    }
+                  ],
                   "type": "SpacesRoute"
                 },
                 {
@@ -4461,6 +4622,23 @@ export const CHANNELS = [
               "name": "themes",
               "optional": false,
               "array": {
+                "fields": [
+                  {
+                    "name": "label",
+                    "optional": false,
+                    "type": "string"
+                  },
+                  {
+                    "name": "modes",
+                    "optional": false,
+                    "type": "{ id: string; polarity: \"light\" | \"dark\"; }[]"
+                  },
+                  {
+                    "name": "themeKey",
+                    "optional": false,
+                    "type": "string"
+                  }
+                ],
                 "type": "ThemeCatalogEntry"
               }
             }
@@ -4686,6 +4864,33 @@ export const CHANNELS = [
               "optional": true,
               "union": [
                 {
+                  "fields": [
+                    {
+                      "name": "conversationId",
+                      "optional": false,
+                      "type": "string"
+                    },
+                    {
+                      "name": "messageCount",
+                      "optional": false,
+                      "type": "number"
+                    },
+                    {
+                      "name": "repo",
+                      "optional": false,
+                      "type": "string"
+                    },
+                    {
+                      "name": "running",
+                      "optional": false,
+                      "type": "boolean"
+                    },
+                    {
+                      "name": "updatedAt",
+                      "optional": true,
+                      "type": "number | undefined"
+                    }
+                  ],
                   "type": "VcsAgentSession"
                 },
                 {
@@ -4701,6 +4906,33 @@ export const CHANNELS = [
               "optional": false,
               "union": [
                 {
+                  "fields": [
+                    {
+                      "name": "name",
+                      "optional": false,
+                      "type": "string"
+                    },
+                    {
+                      "name": "parentCommitSha",
+                      "optional": false,
+                      "type": "string"
+                    },
+                    {
+                      "name": "parentRef",
+                      "optional": false,
+                      "type": "string"
+                    },
+                    {
+                      "name": "parentRepo",
+                      "optional": false,
+                      "type": "string"
+                    },
+                    {
+                      "name": "upstreamPushable",
+                      "optional": false,
+                      "type": "boolean | null"
+                    }
+                  ],
                   "type": "VcsBranch"
                 },
                 {
@@ -4730,6 +4962,18 @@ export const CHANNELS = [
               "name": "changes",
               "optional": false,
               "array": {
+                "fields": [
+                  {
+                    "name": "path",
+                    "optional": false,
+                    "type": "string"
+                  },
+                  {
+                    "name": "status",
+                    "optional": false,
+                    "type": "\"created\" | \"modified\" | \"deleted\""
+                  }
+                ],
                 "type": "VcsChange"
               }
             },
@@ -4773,7 +5017,26 @@ export const CHANNELS = [
               "optional": true,
               "union": [
                 {
-                  "type": "VcsDiffWarning[]"
+                  "array": {
+                    "fields": [
+                      {
+                        "name": "kind",
+                        "optional": false,
+                        "type": "string"
+                      },
+                      {
+                        "name": "message",
+                        "optional": false,
+                        "type": "string"
+                      },
+                      {
+                        "name": "path",
+                        "optional": false,
+                        "type": "string"
+                      }
+                    ],
+                    "type": "VcsDiffWarning"
+                  }
                 },
                 {
                   "type": "undefined"
@@ -4841,6 +5104,33 @@ export const CHANNELS = [
               "name": "prs",
               "optional": false,
               "array": {
+                "fields": [
+                  {
+                    "name": "draft",
+                    "optional": false,
+                    "type": "boolean"
+                  },
+                  {
+                    "name": "number",
+                    "optional": false,
+                    "type": "number"
+                  },
+                  {
+                    "name": "state",
+                    "optional": false,
+                    "type": "\"open\" | \"closed\" | \"merged\""
+                  },
+                  {
+                    "name": "title",
+                    "optional": false,
+                    "type": "string"
+                  },
+                  {
+                    "name": "url",
+                    "optional": false,
+                    "type": "string"
+                  }
+                ],
                 "type": "VcsPR"
               }
             },
@@ -4849,6 +5139,38 @@ export const CHANNELS = [
               "optional": true,
               "union": [
                 {
+                  "fields": [
+                    {
+                      "name": "commitSha",
+                      "optional": false,
+                      "type": "string | null"
+                    },
+                    {
+                      "name": "defaultBranch",
+                      "optional": false,
+                      "type": "string | null"
+                    },
+                    {
+                      "name": "namespace",
+                      "optional": false,
+                      "type": "string"
+                    },
+                    {
+                      "name": "ref",
+                      "optional": false,
+                      "type": "string"
+                    },
+                    {
+                      "name": "refKind",
+                      "optional": false,
+                      "type": "\"branch\" | \"tag\" | \"commit\""
+                    },
+                    {
+                      "name": "repository",
+                      "optional": false,
+                      "type": "string"
+                    }
+                  ],
                   "type": "VcsTarget"
                 },
                 {
