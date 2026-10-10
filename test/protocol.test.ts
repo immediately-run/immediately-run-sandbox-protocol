@@ -307,7 +307,8 @@ describe("a union-valued push channel's fields are shapes the capped extractor c
     expect(field?.type).toBe('ChatProviderChoice[] | undefined');
   });
 
-  it('no union-member value field inlines a shape the capped extractor cannot produce', () => {    for (const [name, entryRaw] of Object.entries(snapshot('sdk').channels)) {
+  it('no union-member value field inlines a shape the capped extractor cannot produce', () => {
+    for (const [name, entryRaw] of Object.entries(snapshot('sdk').channels)) {
       const entry = entryRaw as {
         kind?: string;
         value?: { union?: { fields?: Desc[] }[] };
