@@ -291,8 +291,23 @@ describe("a union-valued push channel's fields are shapes the capped extractor c
   };
   let sawUnionMemberFields = false;
 
-  it('no union-member value field inlines a shape the capped extractor cannot produce', () => {
-    for (const [name, entryRaw] of Object.entries(snapshot('sdk').channels)) {
+  // R3-1074: `llm-provider`'s `connectedProviders` stays FLAT ("ChatProviderChoice[] |
+  // undefined") even though the choice now carries `features?: ChatFeatures` — the SDK's
+  // capped extractor (MAX_DEPTH 2) emits an optional array-of-named-type at that depth as
+  // flat text, so any decomposition is a shape the consumer gate can never match (proven by
+  // running it, review round 1). The wire gate is BLIND to ChatProviderChoice's fields; the
+  // limitation is lifted only by extending the extractor's over-cap union handling first
+  // (the R3-996 pattern). This case pins the blindness so a well-meaning decomposition fails
+  // here instead of behind an immutable publish.
+  it('connectedProviders stays flat — the choice’s fields are below the extractor cap', () => {
+    const entry = snapshot('sdk').channels['llm-provider'] as {
+      value?: { union?: { fields?: { name?: string; type?: string }[] }[] };
+    };
+    const field = entry.value?.union?.[0]?.fields?.find((f) => f.name === 'connectedProviders');
+    expect(field?.type).toBe('ChatProviderChoice[] | undefined');
+  });
+
+  it('no union-member value field inlines a shape the capped extractor cannot produce', () => {    for (const [name, entryRaw] of Object.entries(snapshot('sdk').channels)) {
       const entry = entryRaw as {
         kind?: string;
         value?: { union?: { fields?: Desc[] }[] };
@@ -304,7 +319,13 @@ describe("a union-valued push channel's fields are shapes the capped extractor c
           inspected += 1;
           const flat =
             f.fields === undefined && f.array === undefined && f.union === undefined && typeof f.type === 'string';
+          // R3-1074 (review round 1): the array-of-expanded arm is only producible for a
+          // REQUIRED field. The extractor's over-cap branch (SDK check-protocol-snapshot.mjs,
+          // MAX_DEPTH 2) never distributes an optional field's 'X[] | undefined' union — an
+          // optional array of a named type extracts as flat text, so accepting the expansion
+          // for an optional field green-lights a shape the consumer gate can never match.
           const arrayOfExpanded =
+            f.optional === false &&
             f.array !== undefined && f.fields === undefined && f.union === undefined && f.type === undefined && isExpansion(f.array);
           if (!flat && !isExpansion(f) && !arrayOfExpanded) {
             throw new Error(
