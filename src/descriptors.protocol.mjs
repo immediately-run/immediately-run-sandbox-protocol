@@ -1534,7 +1534,31 @@ export const CHANNELS = [
                 {
                   "name": "connectedProviders",
                   "optional": true,
-                  "type": "ChatProviderChoice[] | undefined"
+                  "array": {
+                    "fields": [
+                      {
+                        "name": "displayName",
+                        "optional": false,
+                        "type": "string"
+                      },
+                      {
+                        "name": "features",
+                        "optional": true,
+                        "type": "ChatFeatures | undefined"
+                      },
+                      {
+                        "name": "models",
+                        "optional": false,
+                        "type": "string[]"
+                      },
+                      {
+                        "name": "providerId",
+                        "optional": false,
+                        "type": "string"
+                      }
+                    ],
+                    "type": "ChatProviderChoice"
+                  }
                 },
                 {
                   "name": "displayName",
