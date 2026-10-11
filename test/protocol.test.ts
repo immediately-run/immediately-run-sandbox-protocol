@@ -909,7 +909,7 @@ describe('protocol-llm embed — the pinned wire shape (R3-1127)', () => {
     methods: Record<string, { payload: { fields: { name: string; optional: boolean }[] } }>;
   };
 
-  it('protocol-llm is request+stream with exactly chat (stream) and embed (request)', () => {
+  it('protocol-llm is request+stream with exactly chat and embed', () => {
     expect(llm.kind).toBe('request+stream');
     expect(Object.keys(llm.methods).sort()).toEqual(['chat', 'embed']);
   });
@@ -921,6 +921,14 @@ describe('protocol-llm embed — the pinned wire shape (R3-1127)', () => {
     expect(byName.values).toMatchObject({ optional: false, array: { type: 'string' } });
     expect(byName.model.optional).toBe(true);
     const union = (byName.model as unknown as { union: unknown[] }).union;
-    expect(union).toMatchObject([{ fields: [{ name: 'model' }, { name: 'providerId' }] }, { type: 'undefined' }]);
+    expect(union).toMatchObject([
+      {
+        fields: [
+          { name: 'model', optional: false, type: 'string' },
+          { name: 'providerId', optional: false, type: 'string' },
+        ],
+      },
+      { type: 'undefined' },
+    ]);
   });
 });
