@@ -226,7 +226,6 @@ export const DYNAMIC_FAMILIES = {
         "feed",
         "ipc",
         "launch",
-        "llm",
         "localstore",
         "openbundle",
         "openlink",
@@ -2392,7 +2391,7 @@ export const CHANNELS = [
       "const": "PROTOCOL_LLM",
       "type": "ProtocolLlm",
       "sdk": {
-        "kind": "stream",
+        "kind": "request+stream",
         "direction": "app->host",
         "methods": {
           "chat": {
@@ -2511,6 +2510,42 @@ export const CHANNELS = [
                       "type": "undefined"
                     }
                   ]
+                }
+              ]
+            }
+          },
+          "embed": {
+            "payload": {
+              "fields": [
+                {
+                  "name": "model",
+                  "optional": true,
+                  "union": [
+                    {
+                      "fields": [
+                        {
+                          "name": "model",
+                          "optional": false,
+                          "type": "string"
+                        },
+                        {
+                          "name": "providerId",
+                          "optional": false,
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "undefined"
+                    }
+                  ]
+                },
+                {
+                  "name": "values",
+                  "optional": false,
+                  "array": {
+                    "type": "string"
+                  }
                 }
               ]
             }

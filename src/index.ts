@@ -30,6 +30,22 @@ export const PROTOCOL_FORMAT_VERSION = 1;
 export type ProtocolSide = 'sandbox' | 'sdk';
 
 /**
+ * The AI SDK's model-kind taxonomy, adopted as the platform's (LLM_AND_AGENTS_SPEC §4.4,
+ * R3-1127): `chat` is the surface that predates the taxonomy (the spec's
+ * ChatModelInfo.kind names it `chat` — the item's draft said `language`; the spec wins,
+ * recorded upstream on the item); the rest are the non-chat kinds gated by `llm:model`.
+ * One vocabulary so each later kind is a method, not a redesign.
+ */
+export type ModelKind =
+  | 'chat'
+  | 'embedding'
+  | 'image'
+  | 'speech'
+  | 'transcription'
+  | 'video'
+  | 'reranking';
+
+/**
  * How a wire name is used.
  *
  * `message` one-way; `push` a host→app state channel; `poll` its `request-*` twin;
