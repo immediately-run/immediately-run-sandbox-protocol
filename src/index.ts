@@ -31,12 +31,13 @@ export type ProtocolSide = 'sandbox' | 'sdk';
 
 /**
  * The AI SDK's model-kind taxonomy, adopted as the platform's (LLM_AND_AGENTS_SPEC §4.4,
- * R3-1127): `language` is the chat surface that predates the taxonomy; the rest are the
- * non-chat kinds gated by `llm:model`. One vocabulary so each later kind is a method,
- * not a redesign.
+ * R3-1127): `chat` is the surface that predates the taxonomy (the spec's
+ * ChatModelInfo.kind names it `chat` — the item's draft said `language`; the spec wins,
+ * recorded upstream on the item); the rest are the non-chat kinds gated by `llm:model`.
+ * One vocabulary so each later kind is a method, not a redesign.
  */
 export type ModelKind =
-  | 'language'
+  | 'chat'
   | 'embedding'
   | 'image'
   | 'speech'

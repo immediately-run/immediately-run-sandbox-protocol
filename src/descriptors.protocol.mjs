@@ -2394,42 +2394,6 @@ export const CHANNELS = [
         "kind": "request+stream",
         "direction": "app->host",
         "methods": {
-          "embed": {
-            "payload": {
-              "fields": [
-                {
-                  "name": "model",
-                  "optional": true,
-                  "union": [
-                    {
-                      "fields": [
-                        {
-                          "name": "model",
-                          "optional": false,
-                          "type": "string"
-                        },
-                        {
-                          "name": "providerId",
-                          "optional": false,
-                          "type": "string"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "undefined"
-                    }
-                  ]
-                },
-                {
-                  "name": "values",
-                  "optional": false,
-                  "array": {
-                    "type": "string"
-                  }
-                }
-              ]
-            }
-          },
           "chat": {
             "payload": {
               "fields": [
@@ -2546,6 +2510,42 @@ export const CHANNELS = [
                       "type": "undefined"
                     }
                   ]
+                }
+              ]
+            }
+          },
+          "embed": {
+            "payload": {
+              "fields": [
+                {
+                  "name": "model",
+                  "optional": true,
+                  "union": [
+                    {
+                      "fields": [
+                        {
+                          "name": "model",
+                          "optional": false,
+                          "type": "string"
+                        },
+                        {
+                          "name": "providerId",
+                          "optional": false,
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "undefined"
+                    }
+                  ]
+                },
+                {
+                  "name": "values",
+                  "optional": false,
+                  "array": {
+                    "type": "string"
+                  }
                 }
               ]
             }

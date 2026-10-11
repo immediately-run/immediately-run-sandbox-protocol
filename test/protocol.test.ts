@@ -426,7 +426,9 @@ describe('the protocol-<scheme> family lists exactly the sdk request/stream sche
     // the prefix defensively. A `startsWith('protocol-')` clause here agrees today and
     // would silently diverge on a future non-prefixed request channel — which the
     // extractor would list under its full name. The request+stream pair is deliberate:
-    // `protocol-fetch` is excluded by both, which is why the list has no `fetch`.
+    // `protocol-fetch` is excluded by both, which is why the list has no `fetch` —
+    // and since R3-1127 `protocol-llm` is request+stream too (embed beside chat),
+    // which is why the list has no `llm` either.
     const derived = Object.entries(channels)
       .filter(([, c]) => c.kind === 'request' || c.kind === 'stream')
       .map(([n]) => n.replace(/^protocol-/, ''))
@@ -895,5 +897,26 @@ describe('protocol-openrepo carries the optional reveal (R3-1033)', () => {
         { type: 'undefined' },
       ],
     });
+  });
+});
+
+// R3-1127 — protocol-llm gains `embed` (a REQUEST beside the chat stream), and the
+// immutable publish makes a wrong shape unfixable, so pin it: the method set, the
+// kind, and embed's payload fields with their optionality.
+describe('protocol-llm embed — the pinned wire shape (R3-1127)', () => {
+  const llm = (snapshot('sdk').channels as Record<string, never>)['protocol-llm'] as {
+    kind: string;
+    methods: Record<string, { payload: { fields: { name: string; optional: boolean }[] } }>;
+  };
+
+  it('protocol-llm is request+stream with exactly chat (stream) and embed (request)', () => {
+    expect(llm.kind).toBe('request+stream');
+    expect(Object.keys(llm.methods).sort()).toEqual(['chat', 'embed']);
+  });
+
+  it('embed carries values: string[] plus the optional model pair', () => {
+    const fields = llm.methods.embed.payload.fields;
+    const byName = Object.fromEntries(fields.map((f) => [f.name, f.optional]));
+    expect(byName).toEqual({ model: true, values: false });
   });
 });
