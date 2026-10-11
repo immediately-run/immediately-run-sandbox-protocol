@@ -920,7 +920,7 @@ describe('protocol-llm embed — the pinned wire shape (R3-1127)', () => {
     expect(Object.keys(byName)).toEqual(['model', 'values']);
     expect(byName.values).toMatchObject({ optional: false, array: { type: 'string' } });
     expect(byName.model.optional).toBe(true);
-    const union = (byName.model as { union: unknown[] }).union;
+    const union = (byName.model as unknown as { union: unknown[] }).union;
     expect(union).toMatchObject([{ fields: [{ name: 'model' }, { name: 'providerId' }] }, { type: 'undefined' }]);
   });
 });
