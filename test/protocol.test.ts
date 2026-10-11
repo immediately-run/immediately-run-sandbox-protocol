@@ -916,7 +916,11 @@ describe('protocol-llm embed — the pinned wire shape (R3-1127)', () => {
 
   it('embed carries values: string[] plus the optional model pair', () => {
     const fields = llm.methods.embed.payload.fields;
-    const byName = Object.fromEntries(fields.map((f) => [f.name, f.optional]));
-    expect(byName).toEqual({ model: true, values: false });
+    const byName = Object.fromEntries(fields.map((f) => [f.name, f]));
+    expect(Object.keys(byName)).toEqual(['model', 'values']);
+    expect(byName.values).toMatchObject({ optional: false, array: { type: 'string' } });
+    expect(byName.model.optional).toBe(true);
+    const union = (byName.model as { union: unknown[] }).union;
+    expect(union).toMatchObject([{ fields: [{ name: 'model' }, { name: 'providerId' }] }, { type: 'undefined' }]);
   });
 });
