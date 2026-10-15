@@ -900,6 +900,34 @@ describe('protocol-openrepo carries the optional reveal (R3-1033)', () => {
   });
 });
 
+// R3-1122 — protocol-llm.chat gains the optional `thinking` field (a per-request
+// thinking level, validated host-side against the chosen model's declared
+// levels), and the immutable publish makes a wrong shape unfixable, so pin it
+// the R3-1127 way.
+describe('protocol-llm chat — the thinking field (R3-1122)', () => {
+  const llm = (snapshot('sdk').channels as Record<string, never>)['protocol-llm'] as {
+    methods: Record<string, { payload: { fields: { name: string; optional: boolean; union?: { type: string }[] }[] } }>;
+  };
+
+  it('chat carries an optional string thinking field', () => {
+    const byName = Object.fromEntries(llm.methods.chat.payload.fields.map((f) => [f.name, f]));
+    expect(byName.thinking).toMatchObject({
+      optional: true,
+      union: [{ type: 'string' }, { type: 'undefined' }],
+    });
+    // the field set is otherwise unchanged: the addition is the only delta
+    expect(Object.keys(byName).sort()).toEqual([
+      'maxTokens',
+      'messages',
+      'model',
+      'modelHint',
+      'responseFormat',
+      'thinking',
+      'tools',
+    ]);
+  });
+});
+
 // R3-1127 — protocol-llm gains `embed` (a REQUEST beside the chat stream), and the
 // immutable publish makes a wrong shape unfixable, so pin it: the method set, the
 // kind, and embed's payload fields with their optionality.
