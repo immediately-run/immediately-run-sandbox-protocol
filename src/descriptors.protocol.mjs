@@ -2481,6 +2481,18 @@ export const CHANNELS = [
                   ]
                 },
                 {
+                  "name": "thinking",
+                  "optional": true,
+                  "union": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "undefined"
+                    }
+                  ]
+                },
+                {
                   "name": "tools",
                   "optional": true,
                   "union": [
