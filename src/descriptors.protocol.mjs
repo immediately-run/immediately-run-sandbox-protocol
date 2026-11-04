@@ -509,6 +509,39 @@ export const CHANNELS = [
       }
     },
     {
+      "name": "bundle-link",
+      "const": "BUNDLE_LINK",
+      "type": "BundleLink",
+      "sdk": {
+        "kind": "message",
+        "direction": "app->host",
+        "payload": {
+          "fields": [
+            {
+              "name": "fragment",
+              "optional": true,
+              "union": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
+            },
+            {
+              "name": "path",
+              "optional": false,
+              "type": "string"
+            }
+          ]
+        },
+        "sites": [
+          "src/followBundleLink.ts"
+        ]
+      }
+    },
+    {
       "name": "chrome-state",
       "const": "CHROME_STATE",
       "type": "ChromeState",

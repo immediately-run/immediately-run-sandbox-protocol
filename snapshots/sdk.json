@@ -94,6 +94,34 @@
         "src/auth.ts"
       ]
     },
+    "bundle-link": {
+      "kind": "message",
+      "direction": "app->host",
+      "payload": {
+        "fields": [
+          {
+            "name": "fragment",
+            "optional": true,
+            "union": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "undefined"
+              }
+            ]
+          },
+          {
+            "name": "path",
+            "optional": false,
+            "type": "string"
+          }
+        ]
+      },
+      "sites": [
+        "src/followBundleLink.ts"
+      ]
+    },
     "chrome-state": {
       "kind": "push",
       "direction": "host->app",

@@ -960,3 +960,28 @@ describe('protocol-llm embed — the pinned wire shape (R3-1127)', () => {
     ]);
   });
 });
+
+// R3-1324 — `bundle-link` carries a bundle-relative path whose leading `..` segments a URL
+// would normalise away; R3-1321 (host) and R3-1322 (grove) pin to this shape, and the
+// immutable publish makes a wrong one unfixable, so pin it: kind, direction, and exactly
+// the two fields with their optionality.
+describe('bundle-link — the pinned wire shape (R3-1324)', () => {
+  const link = (snapshot('sdk').channels as Record<string, never>)['bundle-link'] as {
+    kind: string;
+    direction: string;
+    payload: { fields: { name: string; optional: boolean; type?: string; union?: unknown[] }[] };
+  };
+
+  it('is a fire-and-forget app->host message', () => {
+    expect(link.kind).toBe('message');
+    expect(link.direction).toBe('app->host');
+  });
+
+  it('carries a required path: string and an optional fragment: string', () => {
+    const byName = Object.fromEntries(link.payload.fields.map((f) => [f.name, f]));
+    expect(Object.keys(byName).sort()).toEqual(['fragment', 'path']);
+    expect(byName.path).toMatchObject({ optional: false, type: 'string' });
+    expect(byName.fragment.optional).toBe(true);
+    expect(byName.fragment.union).toEqual([{ type: 'string' }, { type: 'undefined' }]);
+  });
+});
