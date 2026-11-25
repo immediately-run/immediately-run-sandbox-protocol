@@ -444,12 +444,12 @@ describe('the protocol-<scheme> family lists exactly the sdk request/stream sche
 // optional field APP_CUSTOMIZATION_SPEC §5 adds. Pin the whole declared shape so a
 // later edit cannot quietly drop a field the SDK's navigate() has always sent.
 describe('urlchange carries its real shape (R3-874)', () => {
-  it("the sdk snapshot declares url/back/forward plus optional entryState/viewedDocument/replace", () => {
+  it("the sdk snapshot declares url/back/forward plus optional entryState/filesHrefBase/viewedDocument/replace", () => {
     const ch = snapshot('sdk').channels['urlchange'] as unknown as {
       payload: { fields: { name: string; optional: boolean; type?: string; union?: { type: string }[] }[] };
     };
     const byName = new Map(ch.payload.fields.map((f) => [f.name, f]));
-    expect([...byName.keys()]).toEqual(['back', 'entryState', 'forward', 'replace', 'url', 'viewedDocument']);
+    expect([...byName.keys()]).toEqual(['back', 'entryState', 'filesHrefBase', 'forward', 'replace', 'url', 'viewedDocument']);
     expect(byName.get('url')).toMatchObject({ optional: false, type: 'string' });
     expect(byName.get('back')).toMatchObject({ optional: false, type: 'boolean' });
     expect(byName.get('forward')).toMatchObject({ optional: false, type: 'boolean' });
@@ -461,6 +461,12 @@ describe('urlchange carries its real shape (R3-874)', () => {
     expect(byName.get('viewedDocument')).toMatchObject({
       optional: true,
       union: [{ type: 'null' }, { type: 'string' }, { type: 'undefined' }],
+    });
+    // R3-1397: the host's opaque href base for in-bundle links. Optional, so an older
+    // host that never sends it leaves every href as it was.
+    expect(byName.get('filesHrefBase')).toMatchObject({
+      optional: true,
+      union: [{ type: 'string' }, { type: 'undefined' }],
     });
   });
 });
