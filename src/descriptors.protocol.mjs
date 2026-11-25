@@ -4757,6 +4757,18 @@ export const CHANNELS = [
               ]
             },
             {
+              "name": "filesHrefBase",
+              "optional": true,
+              "union": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
+            },
+            {
               "name": "forward",
               "optional": false,
               "type": "boolean"
